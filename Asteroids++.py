@@ -8,11 +8,9 @@ from math import cos, sin, pi
 pygame.init()
 pygame.mixer.init()
 
-#sound credits: William Benckert - Glitching Through the Sky
-    
+#sound credits: William Benckert - Glitching Through the Sky 
 
 # Define variables 
-
 dark_theme = {
     "s_colour" : (255, 255, 255),
     "accent_colour" : (0, 0, 255), 
@@ -20,7 +18,6 @@ dark_theme = {
     "accent_colour_2" : (255, 0, 0), 
     "m_colour" : (0, 0, 0)
     }
-
 
 light_theme = {
     "s_colour" : (0, 0, 0), 
@@ -30,15 +27,9 @@ light_theme = {
     "m_colour" : (255, 255, 255)
     }
 
-
 settings = open("settings.txt", "r")
-
 global current_theme   # terrifing i know
-
 current_theme = eval(settings.readline())
-
-
-
 
 #asteroid objects
 class Asteroids():
@@ -183,7 +174,6 @@ def Menu():
             
         pygame.display.flip()
 
-#play
 def play():
     
     alive = True
@@ -195,15 +185,12 @@ def play():
         userinput()
           
 def volumes():
-    print("boooooom")
-    print(pygame.mixer.music.get_busy())
 
     if pygame.mixer.music.get_busy() == True: 
         pygame.mixer.music.pause() # stop playback of all sound channels pygame.mixer.fadeout pygame.mixer.stop
-        print("unpaused")
+
     elif pygame.mixer.music.get_busy() == False: 
         pygame.mixer.music.unpause() 
-        print("paused")
 
 def themes():
     global current_theme   # terrible i know
@@ -222,8 +209,7 @@ def themes():
                   
     settings = open("settings.txt", "r")       
     current_theme = eval(settings.readline())       
-    
-#setting
+
 def settings():
     volume_button = button_frame(5, 4, "VOLUME", "volumes()", "Menu()", False)
     theme = button_frame(5, 6, "THEME", "themes()", "Menu()", False)
@@ -234,9 +220,7 @@ def settings():
     location = 0
     setting = True
     while setting == True:
-        
         screen.fill(current_theme["m_colour"])
-
         background()
         
         move = 0
@@ -254,11 +238,9 @@ def settings():
                     eval(item.back)
         else: move = 0
              
-        try: 
-            location = location + int(move)
-            location = location % len(list_buttons)
-        except: 
-            pass
+        location = location + int(move)
+        location = location % len(list_buttons)
+
         
         for buttons in list_buttons:
             if buttons == list_buttons[location]: 
@@ -267,7 +249,7 @@ def settings():
             else:
                 buttons.clicking(False)
             
-            pygame.draw.rect(screen, buttons.fillcolour, pygame.Rect(buttons.coordinates[0] - buttons.size[0]/2, buttons.coordinates[1] - buttons.size[1]/2, buttons.size[0], buttons.size[1]),0, 2, 3)
+            pygame.draw.rect(screen, buttons.fillcolour, (buttons.coordinates[0] - buttons.size[0]/2, buttons.coordinates[1] - buttons.size[1]/2, buttons.size[0], buttons.size[1]),0, 2, 3)
             subtitle = pygame.font.SysFont("Helvetic", buttons.textsize).render(buttons.content, True, buttons.textcolour)
             screen.blit(subtitle,(buttons.coordinates[0] - 150, buttons.coordinates[1]- 20))
         
@@ -276,7 +258,6 @@ def settings():
             
         pygame.display.flip()
 
-#characterpage 
 def set():
     pass
 
@@ -288,12 +269,14 @@ def character():
     set = button_frame(5, 6, "SET", "set()", "Menu()", False)
 
     list_buttons = [change, set]
-
           
     location = 0
     characterising = True
     while characterising == True:
        
+        screen.fill(current_theme["m_colour"])
+        background()
+        
         move = 0
         user_input = userinput()
         
@@ -309,11 +292,10 @@ def character():
                     eval(item.back)
         else: move = 0
              
-        try: 
-            location = location + int(move)
-            location = location % len(list_buttons)
-        except: 
-            pass
+
+        location = location + int(move)
+        location = location % len(list_buttons)
+
         
         for buttons in list_buttons:
             if buttons == list_buttons[location]: 
@@ -322,9 +304,12 @@ def character():
             else:
                 buttons.clicking(False)
             
-            pygame.draw.rect(screen, buttons.fillcolour, pygame.Rect(buttons.coordinates[0] - buttons.size[0]/2, buttons.coordinates[1] - buttons.size[1]/2, buttons.size[0], buttons.size[1]),0, 2, 3)
+            pygame.draw.rect(screen, buttons.fillcolour, (buttons.coordinates[0] - buttons.size[0]/2, buttons.coordinates[1] - buttons.size[1]/2, buttons.size[0], buttons.size[1]),0, 2, 3)
             subtitle = pygame.font.SysFont("Helvetic", buttons.textsize).render(buttons.content, True, buttons.textcolour)
             screen.blit(subtitle,(buttons.coordinates[0] - 150, buttons.coordinates[1]- 20))
+        
+        pygame.draw.rect(screen, current_theme["m_colour"], (screen_width/10*5 - 175, screen_height/13*9 - 150, 350, 300),0, 2, 3)
+        pygame.draw.polygon(screen,current_theme["s_colour"], [(screen_width/10*5 - 100, screen_height/13*9 + 20),(screen_width/10*5, screen_height/13*9 - 100),(screen_width/10*5 + 100, screen_height/13*9 + 20)], 2)
         
         title = pygame.font.SysFont("Helvetic", 200).render("SHIP HANGAR", True, current_theme["s_colour"])
         screen.blit(title, (screen_width/2-title.get_width()/2, screen_height/13*2-title.get_height()/2)) 
@@ -377,10 +362,7 @@ def background():
 def draw_regular_polygon(surface, color, vertex_count, radius, position, width=0):
     n, r = vertex_count, radius
     x, y = position
-    pygame.draw.polygon(surface, color, [
-        (x + r * cos(2 * pi * i / n), y + r * sin(2 * pi * i / n))
-        for i in range(n)
-    ], width)
+    pygame.draw.polygon(surface, color, [(x + r * cos(2 * pi * i / n), y + r * sin(2 * pi * i / n)) for i in range(n)], width)
 
 
 # Set up the display window
