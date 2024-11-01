@@ -12,11 +12,31 @@ pygame.mixer.init()
     
 
 # Define variables 
-s_colour = (255, 255, 255)
-accent_colour = (0, 0, 255)   #green
-accent_colour_1 = (0, 255, 0) #blue
-accent_colour_2 = (255, 0, 0) #red
-m_colour = (0, 0, 0)
+
+dark_theme = {
+    "s_colour" : (255, 255, 255),
+    "accent_colour" : (0, 0, 255), 
+    "accent_colour_1" : (0, 255, 0), 
+    "accent_colour_2" : (255, 0, 0), 
+    "m_colour" : (0, 0, 0)
+    }
+
+
+light_theme = {
+    "s_colour" : (0, 0, 0), 
+    "accent_colour" : (0, 0, 255), 
+    "accent_colour_1" : (0, 255, 0), 
+    "accent_colour_2" : (255, 0, 0), 
+    "m_colour" : (255, 255, 255)
+    }
+
+
+settings = open("settings.txt", "r")
+
+global current_theme   # terrifing i know
+
+current_theme = eval(settings.readline())
+
 
 
 
@@ -82,14 +102,15 @@ class transponder():
 #buttons
 class button():
     
-    def __init__(self, x = int, y = int, text = str, function = str, clicked = False, width = 350, height = 90, textsize = 75):
+    def __init__(self, x = int, y = int, text = str, function = str,back =str , clicked = False, width = 350, height = 90, textsize = 75):
         
         self.coordinates = [x, y]
         self.size = [width, height]
-        self.fillcolour = m_colour
+        self.fillcolour = current_theme["m_colour"]
         self.content = text
         self.function = function
-        self.textcolour = s_colour
+        self.back = back
+        self.textcolour = current_theme["s_colour"]
         self.click = clicked
         self.textsize = textsize
         
@@ -98,28 +119,28 @@ class button():
         self.click = clicked
         
         if self.click == True:
-                self.textcolour = m_colour
-                self.fillcolour = s_colour
+                self.textcolour = current_theme["m_colour"]
+                self.fillcolour = current_theme["s_colour"]
         else:
-            self.textcolour = s_colour
-            self.fillcolour = m_colour
+            self.textcolour = current_theme["s_colour"]
+            self.fillcolour = current_theme["m_colour"]
             
 #button_frame to make life easy            
-def button_frame(lattitude, number, content, function, clicked): return button(screen_width/10*lattitude, screen_height/13*number, content, function, clicked)
+def button_frame(lattitude, number, content, function, back, clicked): return button(screen_width/10*lattitude, screen_height/13*number, content, function, back, clicked)
         
 #MENU
 def Menu():
-    play_button = button_frame(5, 4, "PLAY", "play()", False)
-    character_button = button_frame(5, 6, "SHIP", "character()", False)
-    option_button = button_frame(5, 8, "SETTINGS", "settings()", False)
-    exit_button = button_frame(5, 10, "EXIT", "exit()", False)
+    play_button = button_frame(5, 4, "PLAY", "play()", "exit()", False)
+    character_button = button_frame(5, 6, "SHIP", "character()","exit()", False)
+    option_button = button_frame(5, 8, "SETTINGS", "settings()","exit()", False)
+    exit_button = button_frame(5, 10, "EXIT", "exit()","exit()", False)
     list_buttons = [play_button, character_button, option_button, exit_button]
 
     Menuplay = True        
     location = 0
     
     while Menuplay == True:
-        screen.fill(m_colour)
+        screen.fill(current_theme["m_colour"])
         background()
         move = 0
         user_input = userinput()
@@ -130,6 +151,11 @@ def Menu():
             for item in list_buttons:
                 if item.click == True: 
                     eval(item.function)
+                    
+        elif user_input == "esc":
+            for item in list_buttons:
+                if item.click == True: 
+                    eval(item.back)
         else: move = 0
             
             
@@ -152,7 +178,7 @@ def Menu():
             subtitle = pygame.font.SysFont("Helvetic", buttons.textsize).render(buttons.content, True, buttons.textcolour)
             screen.blit(subtitle,(buttons.coordinates[0] - 150, buttons.coordinates[1]- 20))
         
-        title = pygame.font.SysFont("Helvetic", 200).render(" ASTEROIDS++", True, s_colour)
+        title = pygame.font.SysFont("Helvetic", 200).render(" ASTEROIDS++", True, current_theme["s_colour"])
         screen.blit(title, (screen_width/2-title.get_width()/2, screen_height/13*2-title.get_height()/2)) 
             
         pygame.display.flip()
@@ -162,28 +188,45 @@ def play():
     
     alive = True
     while alive == True:
-        screen.fill(m_colour)#
+        screen.fill(current_theme["m_colour"])
         background()
-        pygame.draw.circle(screen,accent_colour_2, [screen_width/10*5, screen_height/13*6], 100)
+        pygame.draw.circle(screen,current_theme["accent_colour_2"], [screen_width/10*5, screen_height/13*6], 100)
         pygame.display.flip()
         userinput()
-    
-def volumes(effect = int):
-    if effect == 0: pygame.mixer.stop # stop playback of all sound channels
-    elif effect == 2: pygame.mixer.play 
-    elif effect == 1: pygame.mixer.music.set_volume(pygame.mixer.music.get_volume + 5) 
-    elif effect == -1: pygame.mixer.music.set_volume(pygame.mixer.music.get_volume - 5)
-    
+          
+def volumes():
+    print("boooooom")
+    print(pygame.mixer.music.get_busy())
+
+    if pygame.mixer.music.get_busy() == True: 
+        pygame.mixer.music.pause() # stop playback of all sound channels pygame.mixer.fadeout pygame.mixer.stop
+        print("unpaused")
+    elif pygame.mixer.music.get_busy() == False: 
+        pygame.mixer.music.unpause() 
+        print("paused")
+
 def themes():
-    if m_colour == [0,0,0]:
-        m_colour = s_colour
-        s_colour =  [0,0,0]
-    pass
+    global current_theme   # terrible i know
+    
+    settings = open("settings.txt", "r")
+    current_theme = eval(settings.readline())
+
+    match current_theme["m_colour"]: 
+        case (0,0,0):
+            settings = open("settings.txt", "w")
+            settings.write(str(light_theme))
+      
+        case (255,255,255):
+            settings = open("settings.txt", "w")
+            settings.write(str(dark_theme))
+                  
+    settings = open("settings.txt", "r")       
+    current_theme = eval(settings.readline())       
     
 #setting
 def settings():
-    volume_button = button_frame(5, 4, "VOLUME", "volumes()", False)
-    theme = button_frame(5, 6, "THEME", "themes()", False)
+    volume_button = button_frame(5, 4, "VOLUME", "volumes()", "Menu()", False)
+    theme = button_frame(5, 6, "THEME", "themes()", "Menu()", False)
 
     list_buttons = [volume_button, theme]
 
@@ -191,8 +234,9 @@ def settings():
     location = 0
     setting = True
     while setting == True:
-        screen.fill(m_colour)
-               
+        
+        screen.fill(current_theme["m_colour"])
+
         background()
         
         move = 0
@@ -204,6 +248,10 @@ def settings():
             for item in list_buttons:
                 if item.click == True: 
                     eval(item.function)
+        elif user_input == "esc":
+            for item in list_buttons:
+                if item.click == True: 
+                    eval(item.back)
         else: move = 0
              
         try: 
@@ -223,21 +271,65 @@ def settings():
             subtitle = pygame.font.SysFont("Helvetic", buttons.textsize).render(buttons.content, True, buttons.textcolour)
             screen.blit(subtitle,(buttons.coordinates[0] - 150, buttons.coordinates[1]- 20))
         
-        title = pygame.font.SysFont("Helvetic", 200).render(" SETTINGS  ", True, s_colour)
+        title = pygame.font.SysFont("Helvetic", 200).render(" SETTINGS  ", True, current_theme["s_colour"])
         screen.blit(title, (screen_width/2-title.get_width()/2, screen_height/13*2-title.get_height()/2)) 
             
         pygame.display.flip()
 
-
 #characterpage 
+def set():
+    pass
+
+def change():
+    pass
+
 def character():
+    change = button_frame(5, 4, "CHANGE", "change()", "Menu()", False)
+    set = button_frame(5, 6, "SET", "set()", "Menu()", False)
+
+    list_buttons = [change, set]
+
+          
+    location = 0
     characterising = True
     while characterising == True:
-        screen.fill(m_colour)
-        background()
-        pygame.draw.circle(screen,accent_colour_1, [screen_width/10*5, screen_height/13*6], 100)
+       
+        move = 0
+        user_input = userinput()
+        
+        if user_input == "w": move = -1
+        elif user_input == "s": move = 1 
+        elif user_input == 13:
+            for item in list_buttons:
+                if item.click == True: 
+                    eval(item.function)
+        elif user_input == "esc":
+            for item in list_buttons:
+                if item.click == True: 
+                    eval(item.back)
+        else: move = 0
+             
+        try: 
+            location = location + int(move)
+            location = location % len(list_buttons)
+        except: 
+            pass
+        
+        for buttons in list_buttons:
+            if buttons == list_buttons[location]: 
+                list_buttons[location].clicking(True)
+            
+            else:
+                buttons.clicking(False)
+            
+            pygame.draw.rect(screen, buttons.fillcolour, pygame.Rect(buttons.coordinates[0] - buttons.size[0]/2, buttons.coordinates[1] - buttons.size[1]/2, buttons.size[0], buttons.size[1]),0, 2, 3)
+            subtitle = pygame.font.SysFont("Helvetic", buttons.textsize).render(buttons.content, True, buttons.textcolour)
+            screen.blit(subtitle,(buttons.coordinates[0] - 150, buttons.coordinates[1]- 20))
+        
+        title = pygame.font.SysFont("Helvetic", 200).render("SHIP HANGAR", True, current_theme["s_colour"])
+        screen.blit(title, (screen_width/2-title.get_width()/2, screen_height/13*2-title.get_height()/2)) 
+            
         pygame.display.flip()
-        userinput()
 
 def exit():
     pygame.quit()
@@ -253,9 +345,8 @@ def userinput():
                 case pygame.K_a: return "a"
                 case pygame.K_d: return "d"
                 case 13: return 13
-                case 769 | 27: exit()
+                case 769 | 27: return "esc"   #escape key
     return 
-
 
 def background():
     #create the locations of the stars for when we animate the background
@@ -265,24 +356,23 @@ def background():
         if star[1] > screen_height:
             star[0] = random.randrange(0, screen_width)
             star[1] = random.randrange(-20, -5)
-        pygame.draw.circle(screen, s_colour, star, 3)
+        pygame.draw.circle(screen, current_theme["s_colour"], star, 3)
 
     for star in star_field_medium:
         star[1] += 2
         if star[1] > screen_height:
             star[0] = random.randrange(0, screen_width)
             star[1] = random.randrange(-20, -5)
-        pygame.draw.circle(screen, s_colour, star, 2)
+        pygame.draw.circle(screen, current_theme["s_colour"], star, 2)
 
     for star in star_field_fast:
         star[1] += 3
         if star[1] > screen_height:
             star[0] = random.randrange(0, screen_width)
             star[1] = random.randrange(-20, -5)
-        pygame.draw.circle(screen, s_colour, star, 1)
+        pygame.draw.circle(screen, current_theme["s_colour"], star, 1)
     
     pygame.time.Clock().tick(30)
-
 
 def draw_regular_polygon(surface, color, vertex_count, radius, position, width=0):
     n, r = vertex_count, radius
@@ -293,14 +383,13 @@ def draw_regular_polygon(surface, color, vertex_count, radius, position, width=0
     ], width)
 
 
-    
 # Set up the display window
 
 screen_width, screen_height = pygame.display.Info().current_w, pygame.display.Info().current_h
 screen = pygame.display.set_mode((screen_width, screen_height-60))
 pygame.display.set_caption("ASTEROIDS++")
-pygame.mixer.music.load("IB_computer_science_coursework/game/8bit sound track.mp3")
-pygame.mixer.music.play(-1)
+pygame.mixer.music.load("8bitsoundtrack.mp3")
+pygame.mixer.music.play(2)
 
 
 #https://gist.github.com/ogilviemt/9b05a89d023054e6279f

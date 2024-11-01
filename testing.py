@@ -1,15 +1,15 @@
 
 # importing pygame module
-import pygame
+# import pygame
  
-# importing sys module
-import sys
+# # importing sys module
+# import sys
  
-# initialising pygame
-pygame.init()
+# # initialising pygame
+# pygame.init()
  
-# creating display
-display = pygame.display.set_mode((300, 300))
+# # creating display
+# display = pygame.display.set_mode((300, 300))
  
 # # creating a running loop
 # while True:
@@ -153,29 +153,78 @@ display = pygame.display.set_mode((300, 300))
 # #quit gracefully
 # pygame.quit()
 
-s_colour = (255, 255, 255)
-accent_colour = (0, 0, 255)   #green
-accent_colour_1 = (0, 255, 0) #blue
-accent_colour_2 = (255, 0, 0) #red
-m_colour = (0, 0, 0)
+# s_colour = (255, 255, 255)
+# accent_colour = (0, 0, 255)   #green
+# accent_colour_1 = (0, 255, 0) #blue
+# accent_colour_2 = (255, 0, 0) #red
+# m_colour = (0, 0, 0)
 
 
-#write lines
-# settings_c = open("IB_computer_science_coursework/game/settings.txt", "w") 
-settings_c = open("IB_computer_science_coursework/game/settings.txt", "w")
+# #write lines
+# # settings_c = open("IB_computer_science_coursework/game/settings.txt", "w") 
+# settings_c = open("IB_computer_science_coursework/game/settings.txt", "w")
 
-theme = {"darktheme": [(255, 255, 255), (0, 0, 255), (0, 255, 0), (255, 0, 0),(0, 0, 0)], 
-         "lighttheme": [(0, 0, 0), (0, 0, 255), (0, 255, 0), (255, 0, 0), (255, 255, 255)], 
-         "current_dark": True}
+# theme = {"darktheme": [(255, 255, 255), (0, 0, 255), (0, 255, 0), (255, 0, 0),(0, 0, 0)], 
+#          "lighttheme": [(0, 0, 0), (0, 0, 255), (0, 255, 0), (255, 0, 0), (255, 255, 255)], 
+#          "current_dark": True}
 
-settings_c.write(theme)
-# settings_c.writelines(theme)
-# settings_c.close() 
+# settings_c.write(theme)
+# # settings_c.writelines(theme)
+# # settings_c.close() 
 
 
-settings = open("IB_computer_science_coursework/game/settings.txt", "r")
-theme = settings.readline()
-print(theme)
-# if theme.value[2] == True:
-#     print("dark theme")
+# settings = open("IB_computer_science_coursework/game/settings.txt", "r")
+# theme = settings.readline()
+# print(theme)
+# # if theme.value[2] == True:
+# #     print("dark theme")
+# dark_theme = {
+#     "s_colour" : (255, 255, 255),
+#     "accent_colour" : (0, 0, 255), 
+#     "accent_colour_1" : (0, 255, 0), 
+#     "accent_colour_2" : (255, 0, 0), 
+#     "m_colour" : (0, 0, 0)
+#     }
+
+
+# light_theme = {
+#     "s_colour" : (0, 0, 0), 
+#     "accent_colour" : (0, 0, 255), 
+#     "accent_colour_1" : (0, 255, 0), 
+#     "accent_colour_2" : (255, 0, 0), 
+#     "m_colour" : (255, 255, 255)
+#     }
+
+   
     
+# settings = open("settings.txt", "r")
+# current_theme = eval(settings.readline())
+
+# print(dark_theme)
+# print(light_theme)
+
+# print(current_theme)
+
+# settings.close()
+
+# match current_theme["m_colour"]: 
+#     case (0,0,0):
+#         settings = open("settings.txt", "w")
+#         settings.writelines(str(light_theme))
+#         print("it was dark now it is light")
+#         settings.close()
+        
+#     case (255,255,255):
+#         settings = open("settings.txt", "w")
+#         settings.write(str(dark_theme))
+#         print("light has won")
+#         settings.close()
+        
+# settings = open("settings.txt", "r")       
+# current_theme = eval(settings.readline())
+
+# print("changed theme")
+# print(current_theme)
+# settings.close()
+    
+    #{"s_colour" : (255, 255, 255), "accent_colour" : (0, 0, 255), "accent_colour_1" : (0, 255, 0), "accent_colour_2" : (255, 0, 0), "m_colour" : (0, 0, 0)}
