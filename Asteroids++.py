@@ -11,25 +11,125 @@ pygame.mixer.init()
 #sound credits: William Benckert - Glitching Through the Sky 
 
 # Define variables 
+
+#https://lospec.com/palette-list
+
+#THEMES
 dark_theme = {
     "s_colour" : (255, 255, 255),
-    "accent_colour" : (0, 0, 255), 
+    "accent_colour_0" : (0, 0, 255), 
     "accent_colour_1" : (0, 255, 0), 
     "accent_colour_2" : (255, 0, 0), 
-    "m_colour" : (0, 0, 0)
+    "m_colour" : (0, 0, 0),
+    "current" : 0
     }
-
 light_theme = {
     "s_colour" : (0, 0, 0), 
-    "accent_colour" : (0, 0, 255), 
+    "accent_colour_0" : (0, 0, 255), 
     "accent_colour_1" : (0, 255, 0), 
     "accent_colour_2" : (255, 0, 0), 
-    "m_colour" : (255, 255, 255)
+    "m_colour" : (255, 255, 255),
+    "current" : 1
     }
+Twilight_5_Palette = {
+    "s_colour" : ("#fbbbad"), 
+    "accent_colour_0" : ("#ee8695"), 
+    "accent_colour_1" : ("#4a7a96"), 
+    "accent_colour_2" : ("#333f58"), 
+    "m_colour" : ("#292831"),
+    "current" : 2
+    }
+    #fbbbad
+    #ee8695
+    #4a7a96
+    #333f58
+    #292831
+    #https://lospec.com/palette-list/twilight-5
+Ink_Palette = {
+    "s_colour" : ("#eaf0d8"), 
+    "accent_colour_0" : ("#96a2b3"), 
+    "accent_colour_1" : ("#596070"), 
+    "accent_colour_2" : ("#413a42"), 
+    "m_colour" : ("#1f1f29"),
+    "current" : 3
+    }
+    #1f1f29
+    #413a42
+    #596070
+    #96a2b3
+    #eaf0d8
+leopold_s_dreams_Palette = {
+    "s_colour" : ("#474476"), 
+    "accent_colour_0" : ("#4888b7"), 
+    "accent_colour_1" : ("#6dbcb9"), 
+    "accent_colour_2" : ("#8cefb6"), 
+    "m_colour" : ("#372134"),
+    "current" : 4
+    }
+    #372134
+    #474476
+    #4888b7
+    #6dbcb9
+    #8cefb6
+Sunset_Red_Palette = {
+    "s_colour" : ("#ee243d"), 
+    "accent_colour_0" : ("#af2747"), 
+    "accent_colour_1" : ("#6b2341"), 
+    "accent_colour_2" : ("#281a2d"), 
+    "m_colour" : ("#0d101b"),
+    "current" : 5
+    }
+    #0d101b
+    #281a2d
+    #6b2341
+    #af2747
+    #ee243d
+five_sheep = {
+    "s_colour" : ("#ffdae8"), 
+    "accent_colour_0" : ("#b41360"), 
+    "accent_colour_1" : ("#ff327c"), 
+    "accent_colour_2" : ("#ff80ae"), 
+    "m_colour" : ("#480a30"),
+    "current" : 6
+    }
+    #480a30
+    #b41360
+    #ff327c
+    #ff80ae
+    #ffdae8 
+slimy_05_Palette = {
+    "s_colour" : ("#40985e"), 
+    "accent_colour_0" : ("#d1cb95"), 
+    "accent_colour_1" : ("#1a644e"), 
+    "accent_colour_2" : ("#04373b"), 
+    "m_colour" : ("#0a1a2f"),
+    "current" : 7
+    }
+    #d1cb95
+    #40985e
+    #1a644e
+    #04373b
+    #0a1a2f
+NEO_5_Palette = {
+    "s_colour" : ("#5433be"), 
+    "accent_colour_0" : ("#e624af"), 
+    "accent_colour_1" : ("#3df9ea"), 
+    "accent_colour_2" : ("#effafa"), 
+    "m_colour" : ("#000000"),
+    "current" : 8
+    }
+    #0e0e0e
+    #5433be
+    #e624af
+    #3df9ea 
+    #effafa
+
+themes = [dark_theme,light_theme,Twilight_5_Palette,Ink_Palette,leopold_s_dreams_Palette,Sunset_Red_Palette,five_sheep,slimy_05_Palette,NEO_5_Palette]
 
 settings = open("settings.txt", "r")
 global current_theme   # terrifing i know
 current_theme = eval(settings.readline())
+print(current_theme)
 
 #asteroid objects
 class Asteroids():
@@ -49,8 +149,7 @@ class Asteroids():
         pass
     
     def gone():
-        pass   
-    
+        pass     
 #space ship rocket objects 
 class Ship():
 
@@ -74,7 +173,6 @@ class Ship():
     
     def death():
         pass
-
 #transponder objects
 class transponder():
     
@@ -89,7 +187,6 @@ class transponder():
     
     def miss():
         pass
-    
 #buttons
 class button():
     
@@ -97,7 +194,7 @@ class button():
         
         self.coordinates = [x, y]
         self.size = [width, height]
-        self.fillcolour = current_theme["m_colour"]
+        self.fillcolour = current_theme["accent_colour_" + str(random.randint(0,2))]  
         self.content = text
         self.function = function
         self.back = back
@@ -117,9 +214,9 @@ class button():
             self.fillcolour = current_theme["m_colour"]
             
 #button_frame to make life easy            
-def button_frame(lattitude, number, content, function, back, clicked): return button(screen_width/10*lattitude, screen_height/13*number, content, function, back, clicked)
+def button_frame(lattitude, number, content, function, back, clicked): 
+    return button(screen_width/10*lattitude, screen_height/13*number, content, function, back, clicked)
         
-#MENU
 def Menu():
     play_button = button_frame(5, 4, "PLAY", "play()", "exit()", False)
     character_button = button_frame(5, 6, "SHIP", "character()","exit()", False)
@@ -175,14 +272,16 @@ def Menu():
         pygame.display.flip()
 
 def play():
-    
+    global current_theme
     alive = True
     while alive == True:
         screen.fill(current_theme["m_colour"])
         background()
-        pygame.draw.circle(screen,current_theme["accent_colour_2"], [screen_width/10*5, screen_height/13*6], 100)
+        user_input = userinput()
+        if user_input == "esc": Menu()
+        
         pygame.display.flip()
-        userinput()
+        
           
 def volumes():
 
@@ -193,19 +292,15 @@ def volumes():
         pygame.mixer.music.unpause() 
 
 def themes():
+    
     global current_theme   # terrible i know
+    themes = [dark_theme,light_theme,Twilight_5_Palette,Ink_Palette,leopold_s_dreams_Palette,Sunset_Red_Palette,five_sheep,slimy_05_Palette,NEO_5_Palette]
     
     settings = open("settings.txt", "r")
     current_theme = eval(settings.readline())
-
-    match current_theme["m_colour"]: 
-        case (0,0,0):
-            settings = open("settings.txt", "w")
-            settings.write(str(light_theme))
-      
-        case (255,255,255):
-            settings = open("settings.txt", "w")
-            settings.write(str(dark_theme))
+    
+    settings = open("settings.txt", "w")
+    settings.write(str(themes[(current_theme["current"] + 1) % 9]))
                   
     settings = open("settings.txt", "r")       
     current_theme = eval(settings.readline())       
@@ -258,17 +353,28 @@ def settings():
             
         pygame.display.flip()
 
-def set():
-    pass
-
 def change():
-    pass
+    characters = open("character.txt", "r")
+    current_character = eval(characters.readline())
 
+    match current_character["current"]: 
+        case 0:
+            characters = open("character.txt", "w")
+            characters.write(str({"triangle": ([-20,40],[0,0],[20,40]), "arrow": ([-20,40],[0,0],[20,40],[0,20]), "current": 1}))
+            print("A")
+      
+        case 1:
+            characters = open("character.txt", "w")
+            characters.write(str({"triangle": ([-20,40],[0,0],[20,40]), "arrow": ([-20,40],[0,0],[20,40],[0,20]), "current": 0}))
+                  
+    characters = open("character.txt", "r")       
+    current_character = eval(characters.readline()) 
+    print("changed charater")
+    
 def character():
-    change = button_frame(5, 4, "CHANGE", "change()", "Menu()", False)
-    set = button_frame(5, 6, "SET", "set()", "Menu()", False)
+    changes = button_frame(5, 4, "CHANGE", "change()", "Menu()", False)
 
-    list_buttons = [change, set]
+    list_buttons = [changes]
           
     location = 0
     characterising = True
@@ -308,14 +414,41 @@ def character():
             subtitle = pygame.font.SysFont("Helvetic", buttons.textsize).render(buttons.content, True, buttons.textcolour)
             screen.blit(subtitle,(buttons.coordinates[0] - 150, buttons.coordinates[1]- 20))
         
-        pygame.draw.rect(screen, current_theme["m_colour"], (screen_width/10*5 - 175, screen_height/13*9 - 150, 350, 300),0, 2, 3)
-        pygame.draw.polygon(screen,current_theme["s_colour"], [(screen_width/10*5 - 100, screen_height/13*9 + 20),(screen_width/10*5, screen_height/13*9 - 100),(screen_width/10*5 + 100, screen_height/13*9 + 20)], 2)
+        pygame.draw.rect(screen, current_theme["s_colour"], (screen_width/10*5 - 175, screen_height/13*7 - 150, 350, 300),5, 2, 3)
         
+        characters = open("character.txt", "r")
+        current_character = eval(characters.readline())
+
+        match current_character["current"]: 
+            case 0:
+                verteces = current_character["triangle"]
+                
+                for vertex in  verteces:
+                    vertex[0] = int(screen_width/2 - vertex[0]*5)
+                    vertex[1] = int(screen_height/13*7 + vertex[1]*5 - 100)
+
+                
+                
+            case 1:
+                verteces = current_character["arrow"]
+                               
+                for vertex in verteces:
+                    vertex[0] = int(screen_width/2 - vertex[0]*5)
+                    vertex[1] = int(screen_height/13*7 + vertex[1]*5 - 100)
+                    
+        
+
+        pygame.draw.polygon(screen,current_theme["s_colour"], verteces, 5)
+                #pygame.draw.polygon(screen,current_theme["s_colour"], [(screen_width/10*5 - 50, screen_height/13*9 + 20),(screen_width/10*5, screen_height/13*9 - 100),(screen_width/10*5 + 50, screen_height/13*9 + 20)], 2)
+
+                
+                
+                
         title = pygame.font.SysFont("Helvetic", 200).render("SHIP HANGAR", True, current_theme["s_colour"])
         screen.blit(title, (screen_width/2-title.get_width()/2, screen_height/13*2-title.get_height()/2)) 
             
         pygame.display.flip()
-
+    
 def exit():
     pygame.quit()
     # sys.exit()
@@ -334,6 +467,7 @@ def userinput():
     return 
 
 def background():
+    global current_theme
     #create the locations of the stars for when we animate the background
 
     for star in star_field_slow:
@@ -341,21 +475,21 @@ def background():
         if star[1] > screen_height:
             star[0] = random.randrange(0, screen_width)
             star[1] = random.randrange(-20, -5)
-        pygame.draw.circle(screen, current_theme["s_colour"], star, 3)
+        pygame.draw.circle(screen, current_theme["accent_colour_0"], star, 3)
 
     for star in star_field_medium:
         star[1] += 2
         if star[1] > screen_height:
             star[0] = random.randrange(0, screen_width)
             star[1] = random.randrange(-20, -5)
-        pygame.draw.circle(screen, current_theme["s_colour"], star, 2)
+        pygame.draw.circle(screen, current_theme["accent_colour_1"], star, 2)
 
     for star in star_field_fast:
         star[1] += 3
         if star[1] > screen_height:
             star[0] = random.randrange(0, screen_width)
             star[1] = random.randrange(-20, -5)
-        pygame.draw.circle(screen, current_theme["s_colour"], star, 1)
+        pygame.draw.circle(screen, current_theme["accent_colour_2"], star, 1)
     
     pygame.time.Clock().tick(30)
 
@@ -371,7 +505,7 @@ screen_width, screen_height = pygame.display.Info().current_w, pygame.display.In
 screen = pygame.display.set_mode((screen_width, screen_height-60))
 pygame.display.set_caption("ASTEROIDS++")
 pygame.mixer.music.load("8bitsoundtrack.mp3")
-pygame.mixer.music.play(2)
+pygame.mixer.music.play(-1)
 
 
 #https://gist.github.com/ogilviemt/9b05a89d023054e6279f
@@ -379,17 +513,17 @@ star_field_slow = []
 star_field_medium = []
 star_field_fast = []
 
-for slow_stars in range(50): 
+for slow_stars in range(200): 
     star_loc_x = random.randrange(0, screen_width)
     star_loc_y = random.randrange(0, screen_height)
     star_field_slow.append([star_loc_x, star_loc_y]) 
 
-for medium_stars in range(35):
+for medium_stars in range(140):
     star_loc_x = random.randrange(0, screen_width)
     star_loc_y = random.randrange(0, screen_height)
     star_field_medium.append([star_loc_x, star_loc_y])
 
-for fast_stars in range(15):
+for fast_stars in range(60):
     star_loc_x = random.randrange(0, screen_width)
     star_loc_y = random.randrange(0, screen_height)
     star_field_fast.append([star_loc_x, star_loc_y])

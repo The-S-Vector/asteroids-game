@@ -227,4 +227,6 @@
 # print(current_theme)
 # settings.close()
     
+a = [1,2,3,4,5]
+print(a[1])
     #{"s_colour" : (255, 255, 255), "accent_colour" : (0, 0, 255), "accent_colour_1" : (0, 255, 0), "accent_colour_2" : (255, 0, 0), "m_colour" : (0, 0, 0)}

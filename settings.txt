@@ -1,1 +1,1 @@
-{'s_colour': (255, 255, 255), 'accent_colour': (0, 0, 255), 'accent_colour_1': (0, 255, 0), 'accent_colour_2': (255, 0, 0), 'm_colour': (0, 0, 0)}
+{'s_colour': '#5433be', 'accent_colour_0': '#e624af', 'accent_colour_1': '#3df9ea', 'accent_colour_2': '#effafa', 'm_colour': '#000000', 'current': 8}
