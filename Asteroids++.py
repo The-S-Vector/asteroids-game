@@ -3,7 +3,9 @@ import time
 import sys
 import random
 import math
-from math import cos, sin, pi
+import numpy
+from numpy import *
+# from math import cos, sin, pi
 
 pygame.init()
 pygame.mixer.init()
@@ -129,7 +131,9 @@ themes = [dark_theme,light_theme,Twilight_5_Palette,Ink_Palette,leopold_s_dreams
 settings = open("settings.txt", "r")
 global current_theme   # terrifing i know
 current_theme = eval(settings.readline())
-print(current_theme)
+
+vector = pygame.math.Vector2
+clock = pygame.time.Clock()
 
 #asteroid objects
 class Asteroids():
@@ -153,26 +157,21 @@ class Asteroids():
 #space ship rocket objects 
 class Ship():
 
-    def __init__(self):
-        pass
+    def __init__(self, colours, shapes):
 
-    def spawn():
-        pass
+        self.colour =  colours            
+        self.shape = shapes
 
-    def movement():
-        for event in pygame.event.get():
-            if event.type == pygame.key("w"):
-                pass
-            
+    def movement(self):
+        self.xvel = 0
+        self.yvel = 0 
     
-    def shot():
-        pass
+    def shoot(self):
+        self.fired = False
+        self.reload = 0.3
     
-    def secondlife():
-        pass
-    
-    def death():
-        pass
+    def death(self):
+        self.death = False
 #transponder objects
 class transponder():
     
@@ -212,6 +211,30 @@ class button():
         else:
             self.textcolour = current_theme["s_colour"]
             self.fillcolour = current_theme["m_colour"]
+           
+def Matrix_multy_r(a, angle):
+    
+    b = [[cos(angle), -sin(angle)],
+         [sin(angle), cos(angle)]]
+    # b = [[cos(angle), sin(angle), 0],
+    #      [-sin(angle), cos(angle), 0],
+    #      [point[0], point[1], 1]]
+    
+    
+    # c = [[1,0,0],
+    #      [0,1,0],
+    #      [-point[0], -point[1], 1]] 
+ 
+    reasult = numpy.dot(a,b)  
+    # print(str(reasult) + "--------------")
+    # print()
+    return reasult
+    # reasult2 = numpy.dot(reasult,c)
+    # print(str(reasult2) + "reasult2")
+    # return reasult2
+
+def Matrix_multy_t(a,t):
+    pass
             
 #button_frame to make life easy            
 def button_frame(lattitude, number, content, function, back, clicked): 
@@ -228,6 +251,7 @@ def Menu():
     location = 0
     
     while Menuplay == True:
+        clock.tick(60)
         screen.fill(current_theme["m_colour"])
         background()
         move = 0
@@ -273,16 +297,76 @@ def Menu():
 
 def play():
     global current_theme
+    
+    speed = 5
+    acceleration = 2
+    angle = 0.1
+    movement = 0
+    
+    characters = open("character.txt", "r")
+    current_character = eval(characters.readline())
+
+    match current_character["current"]: 
+        case 0:shapes = current_character["triangle"]
+        case 1:shapes = current_character["arrow"]            
+    
+    
+    user = Ship(current_theme["s_colour"], shapes)
+    
     alive = True
     while alive == True:
+        clock.tick(60)
         screen.fill(current_theme["m_colour"])
         background()
         user_input = userinput()
         if user_input == "esc": Menu()
+             
+        for event in pygame.event.get(): 
+            if event.type == pygame.QUIT: 
+                pygame.quit()
+
+        keys = pygame.key.get_pressed()
+        
+        if keys[pygame.K_a]:
+            angle -= 0.1
+            # angle_y += ROTATE_SPEED
+        if keys[pygame.K_d]:
+            angle += 0.1
+            # angle_y -= ROTATE_SPEED      
+        if keys[pygame.K_w]:
+            movement += 5
+            # angle_x += ROTATE_SPEED
+        if keys[pygame.K_s]:
+            movement -=5
+            
+        location = []
+        print(user.shape)
+        for point in user.shape:
+            point[1] += movement
+            
+            location.append(Matrix_multy_r(point, angle))  
+            
+            
+        movement = 0 
+        SCALE = 1
+        
+        print(location)
+        
+        for verteces in location:
+            verteces[0] = screen_width/2 - verteces[0]/SCALE
+            verteces[1] = screen_height/2 - verteces[1]/SCALE  
+        
+        pygame.draw.polygon(screen,current_theme["s_colour"],tuple(location), 5)
+        
+        if speed >= 64:
+            acceleration = 0 
+        else:
+            speed += acceleration^2
+            acceleration += acceleration^2
+        
         
         pygame.display.flip()
-        
-          
+             
 def volumes():
 
     if pygame.mixer.music.get_busy() == True: 
@@ -360,17 +444,15 @@ def change():
     match current_character["current"]: 
         case 0:
             characters = open("character.txt", "w")
-            characters.write(str({"triangle": ([-20,40],[0,0],[20,40]), "arrow": ([-20,40],[0,0],[20,40],[0,20]), "current": 1}))
-            print("A")
+            characters.write(str({"triangle": ([-20,40],[0,15],[20,40]), "arrow": ([-20,40],[0,-15],[20,40],[0,15]), "current": 1}))
       
         case 1:
             characters = open("character.txt", "w")
-            characters.write(str({"triangle": ([-20,40],[0,0],[20,40]), "arrow": ([-20,40],[0,0],[20,40],[0,20]), "current": 0}))
+            characters.write(str({"triangle": ([-20,40],[0,15],[20,40]), "arrow": ([-20,40],[0,-15],[20,40],[0,15]), "current": 0}))
                   
     characters = open("character.txt", "r")       
     current_character = eval(characters.readline()) 
-    print("changed charater")
-    
+       
 def character():
     changes = button_frame(5, 4, "CHANGE", "change()", "Menu()", False)
 
@@ -426,7 +508,6 @@ def character():
                 for vertex in  verteces:
                     vertex[0] = int(screen_width/2 - vertex[0]*5)
                     vertex[1] = int(screen_height/13*7 + vertex[1]*5 - 100)
-
                 
                 
             case 1:
@@ -434,7 +515,7 @@ def character():
                                
                 for vertex in verteces:
                     vertex[0] = int(screen_width/2 - vertex[0]*5)
-                    vertex[1] = int(screen_height/13*7 + vertex[1]*5 - 100)
+                    vertex[1] = int(screen_height/13*7 + vertex[1]*5 - 60)
                     
         
 
@@ -473,25 +554,25 @@ def background():
     for star in star_field_slow:
         star[1] += 1
         if star[1] > screen_height:
-            star[0] = random.randrange(0, screen_width)
-            star[1] = random.randrange(-20, -5)
+            star[0] = numpy.random.randint(0, screen_width)
+            star[1] = numpy.random.randint(-20, -5)
         pygame.draw.circle(screen, current_theme["accent_colour_0"], star, 3)
 
     for star in star_field_medium:
         star[1] += 2
         if star[1] > screen_height:
-            star[0] = random.randrange(0, screen_width)
-            star[1] = random.randrange(-20, -5)
+            star[0] = numpy.random.randint(0, screen_width)
+            star[1] = numpy.random.randint(-20, -5)
         pygame.draw.circle(screen, current_theme["accent_colour_1"], star, 2)
 
     for star in star_field_fast:
         star[1] += 3
         if star[1] > screen_height:
-            star[0] = random.randrange(0, screen_width)
-            star[1] = random.randrange(-20, -5)
+            star[0] = numpy.random.randint(0, screen_width)
+            star[1] = numpy.random.randint(-20, -5)
         pygame.draw.circle(screen, current_theme["accent_colour_2"], star, 1)
     
-    pygame.time.Clock().tick(30)
+    pygame.time.Clock().tick(60)
 
 def draw_regular_polygon(surface, color, vertex_count, radius, position, width=0):
     n, r = vertex_count, radius
@@ -514,18 +595,18 @@ star_field_medium = []
 star_field_fast = []
 
 for slow_stars in range(200): 
-    star_loc_x = random.randrange(0, screen_width)
-    star_loc_y = random.randrange(0, screen_height)
+    star_loc_x = numpy.random.randint(0, screen_width)
+    star_loc_y = numpy.random.randint(0, screen_height)
     star_field_slow.append([star_loc_x, star_loc_y]) 
 
 for medium_stars in range(140):
-    star_loc_x = random.randrange(0, screen_width)
-    star_loc_y = random.randrange(0, screen_height)
+    star_loc_x = numpy.random.randint(0, screen_width)
+    star_loc_y = numpy.random.randint(0, screen_height)
     star_field_medium.append([star_loc_x, star_loc_y])
 
 for fast_stars in range(60):
-    star_loc_x = random.randrange(0, screen_width)
-    star_loc_y = random.randrange(0, screen_height)
+    star_loc_x = numpy.random.randint(0, screen_width)
+    star_loc_y = numpy.random.randint(0, screen_height)
     star_field_fast.append([star_loc_x, star_loc_y])
 
 
