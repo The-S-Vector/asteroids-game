@@ -13,16 +13,15 @@ pygame.mixer.init()
 #sound credits: William Benckert - Glitching Through the Sky 
 
 # Define variables 
-
 #https://lospec.com/palette-list
 
-#THEMES
+#THEMES - these are the theme pallets (sub, accent1,accent2,accent3 and main colour respectively)
 dark_theme = {
-    "s_colour" : (255, 255, 255),
+    "s_colour" : (255, 255, 255), # second colour
     "accent_colour_0" : (0, 0, 255), 
     "accent_colour_1" : (0, 255, 0), 
     "accent_colour_2" : (255, 0, 0), 
-    "m_colour" : (0, 0, 0),
+    "m_colour" : (0, 0, 0), # main colour
     "current" : 0
     }
 light_theme = {
@@ -128,13 +127,18 @@ NEO_5_Palette = {
 
 themes = [dark_theme,light_theme,Twilight_5_Palette,Ink_Palette,leopold_s_dreams_Palette,Sunset_Red_Palette,five_sheep,slimy_05_Palette,NEO_5_Palette]
 
+#saving it to another file 
 settings = open("settings.txt", "r")
-global current_theme   # terrifing i know
+global current_theme   #global variable terrifing i know...
 current_theme = eval(settings.readline())
-
-vector = pygame.math.Vector2
+    
+    
+#assigning clock speed to clock
 clock = pygame.time.Clock()
 
+
+
+#OBJECTS
 #asteroid objects
 class Asteroids():
     
@@ -212,6 +216,10 @@ class button():
             self.textcolour = current_theme["s_colour"]
             self.fillcolour = current_theme["m_colour"]
            
+ 
+#SUB-FUNCTIONS  
+
+#MATRIX MULTIPLICATION FOR OBJECT ROTATION         
 def Matrix_multy_r(a, angle):
     
     b = [[cos(angle), -sin(angle)],
@@ -235,11 +243,15 @@ def Matrix_multy_r(a, angle):
 
 def Matrix_multy_t(a,t):
     pass
-            
+    
+    
+#A ONE LINER SUBFUNCTION TO CREATE BUTTON OBJECT        
 #button_frame to make life easy            
 def button_frame(lattitude, number, content, function, back, clicked): 
     return button(screen_width/10*lattitude, screen_height/13*number, content, function, back, clicked)
-        
+  
+  
+#THE MENU PAGE      
 def Menu():
     play_button = button_frame(5, 4, "PLAY", "play()", "exit()", False)
     character_button = button_frame(5, 6, "SHIP", "character()","exit()", False)
@@ -295,6 +307,7 @@ def Menu():
             
         pygame.display.flip()
 
+#THE GAME PAGE...NOT REALLY A PAGE
 def play():
     global current_theme
     
@@ -366,7 +379,9 @@ def play():
         
         
         pygame.display.flip()
-             
+   
+   
+#THIS FUNCTION WORKS WITH SETTINGS FUNTION TO CHANGE THE VOLUME         
 def volumes():
 
     if pygame.mixer.music.get_busy() == True: 
@@ -375,6 +390,7 @@ def volumes():
     elif pygame.mixer.music.get_busy() == False: 
         pygame.mixer.music.unpause() 
 
+#THIS FUNCTION WORKS WITH SETTINGS FUNCTION TO CHANGE THE THEME 
 def themes():
     
     global current_theme   # terrible i know
@@ -389,6 +405,8 @@ def themes():
     settings = open("settings.txt", "r")       
     current_theme = eval(settings.readline())       
 
+
+#SETTINGS PAGE
 def settings():
     volume_button = button_frame(5, 4, "VOLUME", "volumes()", "Menu()", False)
     theme = button_frame(5, 6, "THEME", "themes()", "Menu()", False)
@@ -437,6 +455,7 @@ def settings():
             
         pygame.display.flip()
 
+#THIS FUNCTION WORKS WITH SETTINGS FUNCTION TO CHANGE THE CHARACTER
 def change():
     characters = open("character.txt", "r")
     current_character = eval(characters.readline())
@@ -453,6 +472,7 @@ def change():
     characters = open("character.txt", "r")       
     current_character = eval(characters.readline()) 
        
+#THIS IS THE SHIP/CHARACTER PAGE
 def character():
     changes = button_frame(5, 4, "CHANGE", "change()", "Menu()", False)
 
@@ -529,11 +549,13 @@ def character():
         screen.blit(title, (screen_width/2-title.get_width()/2, screen_height/13*2-title.get_height()/2)) 
             
         pygame.display.flip()
-    
+
+#THE EXIT PAGE    
 def exit():
     pygame.quit()
     # sys.exit()
 
+#THIS IS THE INPUTS FUNCTION
 def userinput():
     for event in pygame.event.get():
         if event.type == pygame.QUIT: exit()
@@ -547,6 +569,7 @@ def userinput():
                 case 769 | 27: return "esc"   #escape key
     return 
 
+#THIS DOES THE BACKGROUND STAR ANIMATION
 def background():
     global current_theme
     #create the locations of the stars for when we animate the background
@@ -574,22 +597,29 @@ def background():
     
     pygame.time.Clock().tick(60)
 
-def draw_regular_polygon(surface, color, vertex_count, radius, position, width=0):
-    n, r = vertex_count, radius
-    x, y = position
-    pygame.draw.polygon(surface, color, [(x + r * cos(2 * pi * i / n), y + r * sin(2 * pi * i / n)) for i in range(n)], width)
+
+#NOT IN USE MAKES POLYGONE FOR ASTEROID
+# def draw_regular_polygon(surface, color, vertex_count, radius, position, width=0):
+#     n, r = vertex_count, radius
+#     x, y = position
+#     pygame.draw.polygon(surface, color, [(x + r * cos(2 * pi * i / n), y + r * sin(2 * pi * i / n)) for i in range(n)], width)
+
+
 
 
 # Set up the display window
-
 screen_width, screen_height = pygame.display.Info().current_w, pygame.display.Info().current_h
 screen = pygame.display.set_mode((screen_width, screen_height-60))
 pygame.display.set_caption("ASTEROIDS++")
+
+#MUSIC
 pygame.mixer.music.load("8bitsoundtrack.mp3")
 pygame.mixer.music.play(-1)
 
 
 #https://gist.github.com/ogilviemt/9b05a89d023054e6279f
+
+#CREATE THE STARS FOR BACKGROUND
 star_field_slow = []
 star_field_medium = []
 star_field_fast = []
@@ -610,6 +640,7 @@ for fast_stars in range(60):
     star_field_fast.append([star_loc_x, star_loc_y])
 
 
+#The start
 Menu()
     
     
