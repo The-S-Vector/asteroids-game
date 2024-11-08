@@ -15,9 +15,14 @@ pygame.mixer.init()
 #sound credits: William Benckert - Glitching Through the Sky 
 #Theme source: https://lospec.com/palette-list
 
-# Define variables 
+# GAME DESCRIPTION
+# a simple asteroid game where the player has to survive for as long as possible while also
+# shooting out transponders as some asteroid will have ores
 
-#https://lospec.com/palette-list
+# LORE DUMP: 
+# mining colony in asteroid belt
+# task is to fly about and locate ores so that the large mining ships can go collect them...
+# future features could include different ship mechanics and upgrade options... 
 
 #THEMES - these are the theme pallets (sub, accent1,accent2,accent3 and main colour respectively)
 dark_theme = {
@@ -222,7 +227,14 @@ class button(): #how i create all the buttons
             self.textcolour = current_theme["s_colour"]
             self.fillcolour = current_theme["m_colour"]
            
-def Matrix_multy_r(a, angle):
+ 
+#SUB-FUNCTIONS  
+
+#MATRIX MULTIPLICATION FOR OBJECT ROTATION         
+# get the coordinates of each point and the desired turning angle
+def Matrix_multy_r(coordinates, angle): 
+    
+    # https://en.wikipedia.org/wiki/2D_computer_graphics#Non-standard_orientation_of_the_coordinate_system
     
     #define 2d rotation matrix
     b = [[cos(angle), -sin(angle)],
@@ -247,9 +259,9 @@ def Matrix_multy_r(a, angle):
     # print(str(reasult2) + "reasult2")
     # return reasult2
 
-def Matrix_multy_t(a,t):
-    pass
-            
+    
+    
+#A ONE LINER SUBFUNCTION TO CREATE BUTTON OBJECT        
 #button_frame to make life easy            
 def button_frame(lattitude, number, content, function, back, clicked): 
     return button(screen_width/10*lattitude, screen_height/13*number, content, function, back, clicked)
@@ -413,6 +425,7 @@ def themes():
     settings = open("settings.txt", "r")       
     current_theme = eval(settings.readline())       
 
+#SETTINGS PAGE
 def settings():
     volume_button = button_frame(5, 4, "VOLUME", "volumes()", "Menu()", False)
     theme = button_frame(5, 6, "THEME", "themes()", "Menu()", False)
@@ -568,10 +581,11 @@ def character():
             
         #    
         pygame.display.flip()
-    
-def exit():
-    pygame.quit()
-    # sys.exit()
+
+#THE EXIT PAGE    
+def exit(): # self explanitory?
+    pygame.quit()  
+    sys.exit()
 
 #THIS IS THE INPUTS FUNCTION
 def userinput():
@@ -613,12 +627,16 @@ def background():
             star[1] = numpy.random.randint(-20, -5)
         pygame.draw.circle(screen, current_theme["accent_colour_2"], star, 1)
     
-    pygame.time.Clock().tick(60)
+    pygame.time.Clock().tick(30) # caps their speed fps
 
-def draw_regular_polygon(surface, color, vertex_count, radius, position, width=0):
-    n, r = vertex_count, radius
-    x, y = position
-    pygame.draw.polygon(surface, color, [(x + r * cos(2 * pi * i / n), y + r * sin(2 * pi * i / n)) for i in range(n)], width)
+
+#NOT IN USE MAKES POLYGONE FOR ASTEROID
+# def draw_regular_polygon(surface, color, vertex_count, radius, position, width=0):
+#     n, r = vertex_count, radius
+#     x, y = position
+#     pygame.draw.polygon(surface, color, [(x + r * cos(2 * pi * i / n), y + r * sin(2 * pi * i / n)) for i in range(n)], width)
+
+
 
 
 # Set up the display window
@@ -631,7 +649,9 @@ pygame.mixer.music.load("8bitsoundtrack.mp3")
 pygame.mixer.music.play(-1)
 
 
-#https://gist.github.com/ogilviemt/9b05a89d023054e6279f
+
+
+#CREATE THE STARS FOR BACKGROUND, credit: https://gist.github.com/ogilviemt/9b05a89d023054e6279f
 star_field_slow = []
 star_field_medium = []
 star_field_fast = []
