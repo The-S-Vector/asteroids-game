@@ -7,22 +7,30 @@ import numpy
 from numpy import *
 # from math import cos, sin, pi
 
+
+#inisiallising pygame and sound library
 pygame.init()
 pygame.mixer.init()
 
 #sound credits: William Benckert - Glitching Through the Sky 
+#Theme source: https://lospec.com/palette-list
 
-# Define variables 
+# GAME DESCRIPTION
+# a simple asteroid game where the player has to survive for as long as possible while also
+# shooting out transponders as some asteroid will have ores
 
-#https://lospec.com/palette-list
+# LORE DUMP: 
+# mining colony in asteroid belt
+# task is to fly about and locate ores so that the large mining ships can go collect them...
+# future features could include different ship mechanics and upgrade options... 
 
-#THEMES
+#THEMES - these are the theme pallets (sub, accent1,accent2,accent3 and main colour respectively)
 dark_theme = {
-    "s_colour" : (255, 255, 255),
+    "s_colour" : (255, 255, 255), # second colour
     "accent_colour_0" : (0, 0, 255), 
     "accent_colour_1" : (0, 255, 0), 
     "accent_colour_2" : (255, 0, 0), 
-    "m_colour" : (0, 0, 0),
+    "m_colour" : (0, 0, 0), # main colour
     "current" : 0
     }
 light_theme = {
@@ -128,13 +136,18 @@ NEO_5_Palette = {
 
 themes = [dark_theme,light_theme,Twilight_5_Palette,Ink_Palette,leopold_s_dreams_Palette,Sunset_Red_Palette,five_sheep,slimy_05_Palette,NEO_5_Palette]
 
+#saving it to another file 
 settings = open("settings.txt", "r")
-global current_theme   # terrifing i know
+global current_theme   #global variable terrifing i know...
 current_theme = eval(settings.readline())
-
-vector = pygame.math.Vector2
+    
+    
+#assigning clock speed to clock
 clock = pygame.time.Clock()
 
+
+
+#OBJECTS
 #asteroid objects
 class Asteroids():
     
@@ -142,38 +155,36 @@ class Asteroids():
         self.size = 10
         self.vector = 10
         self.speed = 10
-         
+        
+        #not in use yet
         #pygame.draw.polygon()
-
-    
+        
+    #other characteristics 
     def collisions():
         pass
-    
     def transpoded():
         pass
-    
     def gone():
         pass     
 #space ship rocket objects 
 class Ship():
 
-    def __init__(self, colours, shapes):
-
+    def __init__(self, colours, shapes): #creation and eastheitic characteristics
         self.colour =  colours            
         self.shape = shapes
 
-    def movement(self):
+    def movement(self): #velocities, not implimented yet. This is to introduct acceleration...
         self.xvel = 0
         self.yvel = 0 
     
-    def shoot(self):
+    def shoot(self):  #not implimented yet but this is to manage shooting capabilities 
         self.fired = False
         self.reload = 0.3
     
-    def death(self):
+    def death(self):  #death can only be delayed...
         self.death = False
 #transponder objects
-class transponder():
+class transponder(): # not implimetned yet....
     
     def __init__(self):
         pass
@@ -187,13 +198,15 @@ class transponder():
     def miss():
         pass
 #buttons
-class button():
+class button(): #how i create all the buttons
     
+    #I create them bassed off certain desired characteristics....
     def __init__(self, x = int, y = int, text = str, function = str,back =str , clicked = False, width = 350, height = 90, textsize = 75):
         
+        #characteristics...self evident names...
         self.coordinates = [x, y]
         self.size = [width, height]
-        self.fillcolour = current_theme["accent_colour_" + str(random.randint(0,2))]  
+        self.fillcolour = current_theme["s_colour"]  
         self.content = text
         self.function = function
         self.back = back
@@ -201,10 +214,12 @@ class button():
         self.click = clicked
         self.textsize = textsize
         
+        #this is to detect which one is selected and highlight the button
     def clicking(self, clicked):
         
         self.click = clicked
         
+        #if selected flip the fillcolour and text colour around if not leave
         if self.click == True:
                 self.textcolour = current_theme["m_colour"]
                 self.fillcolour = current_theme["s_colour"]
@@ -212,10 +227,24 @@ class button():
             self.textcolour = current_theme["s_colour"]
             self.fillcolour = current_theme["m_colour"]
            
-def Matrix_multy_r(a, angle):
+ 
+#SUB-FUNCTIONS  
+
+#MATRIX MULTIPLICATION FOR OBJECT ROTATION         
+# get the coordinates of each point and the desired turning angle
+def Matrix_multy_r(coordinates, angle): 
     
+    # https://en.wikipedia.org/wiki/2D_computer_graphics#Non-standard_orientation_of_the_coordinate_system
+    
+    #define 2d rotation matrix
     b = [[cos(angle), -sin(angle)],
          [sin(angle), cos(angle)]]
+    
+    #multiply the matric and output
+    return numpy.dot(coordinates,b)
+    
+    ##Combined transformation and rotation matrix
+    
     # b = [[cos(angle), sin(angle), 0],
     #      [-sin(angle), cos(angle), 0],
     #      [point[0], point[1], 1]]
@@ -225,21 +254,20 @@ def Matrix_multy_r(a, angle):
     #      [0,1,0],
     #      [-point[0], -point[1], 1]] 
  
-    reasult = numpy.dot(a,b)  
-    # print(str(reasult) + "--------------")
-    # print()
-    return reasult
+
     # reasult2 = numpy.dot(reasult,c)
     # print(str(reasult2) + "reasult2")
     # return reasult2
 
-def Matrix_multy_t(a,t):
-    pass
-            
+    
+    
+#A ONE LINER SUBFUNCTION TO CREATE BUTTON OBJECT        
 #button_frame to make life easy            
 def button_frame(lattitude, number, content, function, back, clicked): 
     return button(screen_width/10*lattitude, screen_height/13*number, content, function, back, clicked)
-        
+  
+  
+#THE MENU PAGE      
 def Menu():
     play_button = button_frame(5, 4, "PLAY", "play()", "exit()", False)
     character_button = button_frame(5, 6, "SHIP", "character()","exit()", False)
@@ -295,6 +323,7 @@ def Menu():
             
         pygame.display.flip()
 
+#THE GAME PAGE...NOT REALLY A PAGE
 def play():
     global current_theme
     
@@ -366,7 +395,9 @@ def play():
         
         
         pygame.display.flip()
-             
+   
+   
+#THIS FUNCTION WORKS WITH SETTINGS FUNTION TO CHANGE THE VOLUME         
 def volumes():
 
     if pygame.mixer.music.get_busy() == True: 
@@ -375,20 +406,26 @@ def volumes():
     elif pygame.mixer.music.get_busy() == False: 
         pygame.mixer.music.unpause() 
 
+#THIS FUNCTION WORKS WITH SETTINGS FUNCTION TO CHANGE THE THEME 
 def themes():
     
     global current_theme   # terrible i know
+    #I don't know this effects global and local variables as i don't think i should be calling them in here....
     themes = [dark_theme,light_theme,Twilight_5_Palette,Ink_Palette,leopold_s_dreams_Palette,Sunset_Red_Palette,five_sheep,slimy_05_Palette,NEO_5_Palette]
     
+    #read from external file
     settings = open("settings.txt", "r")
     current_theme = eval(settings.readline())
     
+    #write the next theme by cycling through
     settings = open("settings.txt", "w")
-    settings.write(str(themes[(current_theme["current"] + 1) % 9]))
-                  
+    settings.write(str(themes[(current_theme["current"] + 1) % len(themes)]))
+    
+    #same issue about not needing to do this as it is localscope?              
     settings = open("settings.txt", "r")       
     current_theme = eval(settings.readline())       
 
+#SETTINGS PAGE
 def settings():
     volume_button = button_frame(5, 4, "VOLUME", "volumes()", "Menu()", False)
     theme = button_frame(5, 6, "THEME", "themes()", "Menu()", False)
@@ -437,10 +474,13 @@ def settings():
             
         pygame.display.flip()
 
+#THIS FUNCTION WORKS WITH SETTINGS FUNCTION TO CHANGE THE CHARACTER
 def change():
+    #reads the current character cheet from the save file
     characters = open("character.txt", "r")
     current_character = eval(characters.readline())
 
+    #Matches the current ship to the differetn types as changes it...this is dones by looking at and assigning the current key in the dictionary
     match current_character["current"]: 
         case 0:
             characters = open("character.txt", "w")
@@ -449,25 +489,34 @@ def change():
         case 1:
             characters = open("character.txt", "w")
             characters.write(str({"triangle": ([-20,40],[0,15],[20,40]), "arrow": ([-20,40],[0,-15],[20,40],[0,15]), "current": 0}))
-                  
+    
+    
+    #I DON'T BELIVE THIS IS NECCESSARY AS THIS VARIABLE IS IN A LOCAL SCOPE SO IT DOES NOT MATTER??              
     characters = open("character.txt", "r")       
-    current_character = eval(characters.readline()) 
+    current_character = eval(characters.readline())  
        
+#THIS IS THE SHIP/CHARACTER PAGE
 def character():
+    
+    #
     changes = button_frame(5, 4, "CHANGE", "change()", "Menu()", False)
-
     list_buttons = [changes]
           
+    #      
     location = 0
     characterising = True
     while characterising == True:
        
+        #
         screen.fill(current_theme["m_colour"])
         background()
         
+        #
         move = 0
-        user_input = userinput()
         
+        
+        #
+        user_input = userinput()
         if user_input == "w": move = -1
         elif user_input == "s": move = 1 
         elif user_input == 13:
@@ -481,10 +530,12 @@ def character():
         else: move = 0
              
 
+
+        #
         location = location + int(move)
         location = location % len(list_buttons)
-
         
+        #
         for buttons in list_buttons:
             if buttons == list_buttons[location]: 
                 list_buttons[location].clicking(True)
@@ -496,12 +547,15 @@ def character():
             subtitle = pygame.font.SysFont("Helvetic", buttons.textsize).render(buttons.content, True, buttons.textcolour)
             screen.blit(subtitle,(buttons.coordinates[0] - 150, buttons.coordinates[1]- 20))
         
-        pygame.draw.rect(screen, current_theme["s_colour"], (screen_width/10*5 - 175, screen_height/13*7 - 150, 350, 300),5, 2, 3)
         
+        
+        #
         characters = open("character.txt", "r")
         current_character = eval(characters.readline())
 
-        match current_character["current"]: 
+        match current_character["current"]: #
+            
+            #
             case 0:
                 verteces = current_character["triangle"]
                 
@@ -509,7 +563,7 @@ def character():
                     vertex[0] = int(screen_width/2 - vertex[0]*5)
                     vertex[1] = int(screen_height/13*7 + vertex[1]*5 - 100)
                 
-                
+            # 
             case 1:
                 verteces = current_character["arrow"]
                                
@@ -517,99 +571,108 @@ def character():
                     vertex[0] = int(screen_width/2 - vertex[0]*5)
                     vertex[1] = int(screen_height/13*7 + vertex[1]*5 - 60)
                     
-        
-
+        #
         pygame.draw.polygon(screen,current_theme["s_colour"], verteces, 5)
-                #pygame.draw.polygon(screen,current_theme["s_colour"], [(screen_width/10*5 - 50, screen_height/13*9 + 20),(screen_width/10*5, screen_height/13*9 - 100),(screen_width/10*5 + 50, screen_height/13*9 + 20)], 2)
-
-                
-                
-                
+        pygame.draw.rect(screen, current_theme["s_colour"], (screen_width/10*5 - 175, screen_height/13*7 - 150, 350, 300),5, 2, 3)
+        
+        #
         title = pygame.font.SysFont("Helvetic", 200).render("SHIP HANGAR", True, current_theme["s_colour"])
         screen.blit(title, (screen_width/2-title.get_width()/2, screen_height/13*2-title.get_height()/2)) 
             
+        #    
         pygame.display.flip()
-    
-def exit():
-    pygame.quit()
-    # sys.exit()
 
+#THE EXIT PAGE    
+def exit(): # self explanitory?
+    pygame.quit()  
+    sys.exit()
+
+#THIS IS THE INPUTS FUNCTION
 def userinput():
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT: exit()
-        if event.type == pygame.KEYUP:      
+    for event in pygame.event.get(): # gets the registered keys of the events stack 
+        if event.type == pygame.QUIT: exit() # if the event is the close button than exit
+        if event.type == pygame.KEYUP:      #if a key is released match the event to the following
             match event.key:
                 case pygame.K_w: return "w"
                 case pygame.K_s: return "s"
                 case pygame.K_a: return "a"
                 case pygame.K_d: return "d"
-                case 13: return 13
+                case 13: return 13 # this is the enter key code
                 case 769 | 27: return "esc"   #escape key
-    return 
+    return #return nothing, theif!
 
+#THIS DOES THE BACKGROUND STAR ANIMATION
 def background():
-    global current_theme
+    global current_theme  #disgusting stuff..
     #create the locations of the stars for when we animate the background
 
-    for star in star_field_slow:
+    for star in star_field_slow: #if the slow stars reach the bottom they get moved back up at a random x and y coordinate
         star[1] += 1
-        if star[1] > screen_height:
-            star[0] = numpy.random.randint(0, screen_width)
-            star[1] = numpy.random.randint(-20, -5)
-        pygame.draw.circle(screen, current_theme["accent_colour_0"], star, 3)
+        if star[1] > screen_height: # if it reaches the bottom 
+            star[0] = numpy.random.randint(0, screen_width) #ramdom x coordinate bassed off the width of the screen
+            star[1] = numpy.random.randint(-20, -5)  # random height 20 to 5 pixels above the screen
+        pygame.draw.circle(screen, current_theme["accent_colour_0"], star, 3) # their colour depend on the theme
 
-    for star in star_field_medium:
+    for star in star_field_medium: # see above but for medium speed stars
         star[1] += 2
         if star[1] > screen_height:
             star[0] = numpy.random.randint(0, screen_width)
             star[1] = numpy.random.randint(-20, -5)
         pygame.draw.circle(screen, current_theme["accent_colour_1"], star, 2)
 
-    for star in star_field_fast:
+    for star in star_field_fast: # see aboce but for fast stars 
         star[1] += 3
         if star[1] > screen_height:
             star[0] = numpy.random.randint(0, screen_width)
             star[1] = numpy.random.randint(-20, -5)
         pygame.draw.circle(screen, current_theme["accent_colour_2"], star, 1)
     
-    pygame.time.Clock().tick(60)
+    pygame.time.Clock().tick(30) # caps their speed fps
 
-def draw_regular_polygon(surface, color, vertex_count, radius, position, width=0):
-    n, r = vertex_count, radius
-    x, y = position
-    pygame.draw.polygon(surface, color, [(x + r * cos(2 * pi * i / n), y + r * sin(2 * pi * i / n)) for i in range(n)], width)
+
+#NOT IN USE MAKES POLYGONE FOR ASTEROID
+# def draw_regular_polygon(surface, color, vertex_count, radius, position, width=0):
+#     n, r = vertex_count, radius
+#     x, y = position
+#     pygame.draw.polygon(surface, color, [(x + r * cos(2 * pi * i / n), y + r * sin(2 * pi * i / n)) for i in range(n)], width)
+
+
 
 
 # Set up the display window
-
 screen_width, screen_height = pygame.display.Info().current_w, pygame.display.Info().current_h
 screen = pygame.display.set_mode((screen_width, screen_height-60))
 pygame.display.set_caption("ASTEROIDS++")
+
+#MUSIC
 pygame.mixer.music.load("8bitsoundtrack.mp3")
 pygame.mixer.music.play(-1)
 
 
-#https://gist.github.com/ogilviemt/9b05a89d023054e6279f
+
+
+#CREATE THE STARS FOR BACKGROUND, credit: https://gist.github.com/ogilviemt/9b05a89d023054e6279f
 star_field_slow = []
 star_field_medium = []
 star_field_fast = []
 
-for slow_stars in range(200): 
+for slow_stars in range(200): #200 random x and y coordinates...
     star_loc_x = numpy.random.randint(0, screen_width)
     star_loc_y = numpy.random.randint(0, screen_height)
     star_field_slow.append([star_loc_x, star_loc_y]) 
 
-for medium_stars in range(140):
+for medium_stars in range(140): #140 random x and y coordinates
     star_loc_x = numpy.random.randint(0, screen_width)
     star_loc_y = numpy.random.randint(0, screen_height)
     star_field_medium.append([star_loc_x, star_loc_y])
 
-for fast_stars in range(60):
+for fast_stars in range(60): #60 random x and y coordinates
     star_loc_x = numpy.random.randint(0, screen_width)
     star_loc_y = numpy.random.randint(0, screen_height)
     star_field_fast.append([star_loc_x, star_loc_y])
 
 
+#The start
 Menu()
     
     
