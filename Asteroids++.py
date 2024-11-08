@@ -241,16 +241,51 @@ class button(): #how i create all the buttons
 
 #MATRIX MULTIPLICATION FOR OBJECT ROTATION         
 # get the coordinates of each point and the desired turning angle
-def Matrix_multy_r(coordinates, angle): 
+def Matrix_multy_r(user,movementx, movementy, angle): 
     
-    # https://en.wikipedia.org/wiki/2D_computer_graphics#Non-standard_orientation_of_the_coordinate_system
+    location = []
     
-    #define 2d rotation matrix
-    b = [[cos(angle), -sin(angle)],
-         [sin(angle), cos(angle)]]
+    default = [[-20, 40], [0, -15], [20, 40], [0, 15]]
+
+    x = 0
+    
+    for point in user.shape:
+                
+        point[0] += movementx
+        point[1] += movementy
+
+        print(point)
+        print("^^^^^^^^^^^^^^^^")
+        # https://en.wikipedia.org/wiki/2D_computer_graphics#Non-standard_orientation_of_the_coordinate_system
+
+        #define 2d rotation matrix
+        b = [[cos(angle), -sin(angle)],
+                [sin(angle), cos(angle)]]
+        
+        
+        
+        difx = point[0] - default[x][0]
+        dify = point[1] - default[x][1]
+
+        point[0] -=difx
+        point[1] -=dify 
+        
+        
+            #for every  point in the shape change the y axis by the movement
+        #if it is strange to only move the y axis, i don't know, it just works, i belive it is because the coordinates are based of the origin which idk 
+
+            
+            #this appends to the location list the coordinate of every point after going through the rotation matrix so the rotated version...
+        location.append(numpy.dot(point,b))
+        
+        point[0] += difx
+        point[1] += dify 
+        x += 1
+        
+    return location
     
     #multiply the matric and output
-    return numpy.dot(coordinates,b)
+    
     
     ##Combined transformation and rotation matrix
     
@@ -268,146 +303,159 @@ def Matrix_multy_r(coordinates, angle):
     # print(str(reasult2) + "reasult2")
     # return reasult2
     
-
 #THE GAME PAGE...NOT REALLY A PAGE
 def play():
-    global current_theme
+    global current_theme #vomitingly bad
     
-    speed = 5
-    acceleration = 2
+    #varibables that are not all in use see below
+    # speed = 5  # not used
+    # acceleration = 2 # not used
+    
     angle = 0.1
     movement = 0
     
+    #gets the current character
     characters = open("character.txt", "r")
     current_character = eval(characters.readline())
-
+    
     match current_character["current"]: 
         case 0:shapes = current_character["triangle"]
         case 1:shapes = current_character["arrow"]            
     
-    
+    #the user becomes the selected ship from above
     user = Ship(current_theme["s_colour"], shapes)
     
+    
+    #starts loop
     alive = True
     while alive == True:
-        clock.tick(60)
+        
+        #fills screen with main colour and runs background animation
         screen.fill(current_theme["m_colour"])
         background()
+        
+        #gets the users input but only pertaining to escape and quit...
         user_input = userinput()
         if user_input == "esc": Menu()
-             
         for event in pygame.event.get(): 
             if event.type == pygame.QUIT: 
                 pygame.quit()
 
+        #the reason this is split from the other input block is because this uses the get_pressed() function which allows for held keys...
         keys = pygame.key.get_pressed()
         
-        if keys[pygame.K_a]:
-            angle -= 0.1
-            # angle_y += ROTATE_SPEED
-        if keys[pygame.K_d]:
+        # depending on the key i change the angle or the movement
+        # spiny keys
+        if keys[pygame.K_a]: 
             angle += 0.1
-            # angle_y -= ROTATE_SPEED      
+        if keys[pygame.K_d]:
+            angle -= 0.1
+        
+        # for/backwards keys
         if keys[pygame.K_w]:
-            movement += 5
-            # angle_x += ROTATE_SPEED
+            movement -= 5
         if keys[pygame.K_s]:
-            movement -=5
+            movement +=5
             
-        location = []
-        print(user.shape)
-        for point in user.shape:
-            point[1] += movement
+ 
+        print(user.shape) #delete after
+         
+
+        
+        #location is the list i store the reasults of the matrix multiplication for every point
+        location = Matrix_multy_r(user, movement, angle)
             
-            location.append(Matrix_multy_r(point, angle))  
-            
-            
+        #resets the movement and sets the scale of the ships magnification to 1 
         movement = 0 
-        SCALE = 1
+        SCALE = 0.8
         
-        print(location)
+        print(location)#delete after
         
+        
+        #this might be the cause of all my rotation issue but anyway
+        #for every point in location(the matrix multiplied array) change it so the origin is the center of the screen so it starts in the center... 
         for verteces in location:
             verteces[0] = screen_width/2 - verteces[0]/SCALE
             verteces[1] = screen_height/2 - verteces[1]/SCALE  
         
+        #this draws the ship which locations arraw 
         pygame.draw.polygon(screen,current_theme["s_colour"],tuple(location), 5)
         
-        if speed >= 64:
-            acceleration = 0 
-        else:
-            speed += acceleration^2
-            acceleration += acceleration^2
+        # # irrelivant, for speed and acceleration
+        # if speed >= 64:
+        #     acceleration = 0 
+        # else:
+        #     speed += acceleration^2
+        #     acceleration += acceleration^2
         
         
+        #updates the screen and limits the clock to whate ever
         pygame.display.flip()
-   
+        clock.tick(120)
 
 
 ###MAIN PAGE
-
 #THE MENU PAGE      
 def Menu():
     
-    #
+    #creates a buttons by calling the button subfunction and creating an object 
+    #e.g fake_button = button_frame_function(possition in x grid, possition in y grid, it's text content, function, bakc function, it selected/clicked)
     play_button = button_frame(5, 4, "PLAY", "play()", "exit()", False)
     character_button = button_frame(5, 6, "SHIP", "character()","exit()", False)
     option_button = button_frame(5, 8, "SETTINGS", "settings()","exit()", False)
     exit_button = button_frame(5, 10, "EXIT", "exit()","exit()", False)
     list_buttons = [play_button, character_button, option_button, exit_button]
 
-    #
+    #starts loop
     location = 0
     Menuplay = True       
     while Menuplay == True:
         
-        #
+        #fills screen with black and starts background aniamtion
         screen.fill(current_theme["m_colour"])
         background()
         
-        #
+        #sets the move variable to 0 and askes for user input
         move = 0
         user_input = userinput()
         
-        #
+        #match user input and outputs a function or a move
         if user_input == "w": move = -1
         elif user_input == "s": move = 1 
-        elif user_input == 13:
+        elif user_input == 13:  #if enter run the function of the selected button
             for item in list_buttons:
                 if item.click == True: 
                     eval(item.function)
                     
-        elif user_input == "esc":
+        elif user_input == "esc": #if escape run the back function of the selected button
             for item in list_buttons:
                 if item.click == True: 
                     eval(item.back)
         else: move = 0
             
-        #
+        #changes location by move and modulos it by number of buttons to prevent overflow and such
         location = location + int(move)
         location = location % len(list_buttons)
         
-        #
+        #for every button check if it is at location if it is select it
         for buttons in list_buttons:
             if buttons == list_buttons[location]: 
                 list_buttons[location].clicking(True)
-            
             else:
                 buttons.clicking(False)
             
-            #
+            #draw buttons and text
             pygame.draw.rect(screen, buttons.fillcolour, pygame.Rect(buttons.coordinates[0] - buttons.size[0]/2, buttons.coordinates[1] - buttons.size[1]/2, buttons.size[0], buttons.size[1]),0, 2, 3)
             subtitle = pygame.font.SysFont("Helvetic", buttons.textsize).render(buttons.content, True, buttons.textcolour)
             screen.blit(subtitle,(buttons.coordinates[0] - 150, buttons.coordinates[1]- 20))
         
-        #
+        #draw title
         title = pygame.font.SysFont("Helvetic", 200).render(" ASTEROIDS++", True, current_theme["s_colour"])
         screen.blit(title, (screen_width/2-title.get_width()/2, screen_height/13*2-title.get_height()/2)) 
            
-        # 
+        #update screen
         pygame.display.flip()
         clock.tick(60)
-
 
 
 ###PAGE 2
@@ -431,8 +479,8 @@ def change():
     
     #I DON'T BELIVE THIS IS NECCESSARY AS THIS VARIABLE IS IN A LOCAL SCOPE SO IT DOES NOT MATTER??              
     characters = open("character.txt", "r")       
-    current_character = eval(characters.readline())  
-       
+    current_character = eval(characters.readline())       
+
 #THIS IS THE SHIP/CHARACTER PAGE
 def character():
     
@@ -534,7 +582,6 @@ def themes():
     current_theme = eval(settings.readline())       
 
     
-
 #SETTINGS PAGE
 def settings():
     #create buttons
@@ -597,7 +644,6 @@ def settings():
         clock.tick(60)
 
 
-
 ###UTILITIES AND OTHER
 
 #THE EXIT PAGE    
@@ -608,6 +654,7 @@ def exit(): # self explanitory?
 #A ONE LINER SUBFUNCTION TO CREATE BUTTON OBJECT        
 #button_frame to make life easy            
 def button_frame(lattitude, number, content, function, back, clicked): 
+    #I divided the screen up into a grid so that 2 first numbers are the grid coordinates it is at
     return button(screen_width/10*lattitude, screen_height/13*number, content, function, back, clicked)
 
 #THIS IS THE INPUTS FUNCTION
@@ -653,7 +700,7 @@ def background():
     pygame.time.Clock().tick(30) # caps their speed fps
 
 
-#NOT IN USE MAKES POLYGONE FOR ASTEROID
+#NOT IN USE MAKES POLYGONE FOR ASTEROID # code taken off stackoverflow forum
 # def draw_regular_polygon(surface, color, vertex_count, radius, position, width=0):
 #     n, r = vertex_count, radius
 #     x, y = position
@@ -661,6 +708,7 @@ def background():
 
 
 
+#The start
 # Set up the display window
 screen_width, screen_height = pygame.display.Info().current_w, pygame.display.Info().current_h
 screen = pygame.display.set_mode((screen_width, screen_height-60))
@@ -669,7 +717,6 @@ pygame.display.set_caption("ASTEROIDS++")
 #MUSIC
 pygame.mixer.music.load("8bitsoundtrack.mp3")
 pygame.mixer.music.play(-1) #indefinit play loops
-
 
 
 #CREATE THE STARS FOR BACKGROUND, credit: https://gist.github.com/ogilviemt/9b05a89d023054e6279f
@@ -692,12 +739,9 @@ for fast_stars in range(60): #60 random x and y coordinates
     star_loc_y = numpy.random.randint(0, screen_height)
     star_field_fast.append([star_loc_x, star_loc_y])
 
-
-#The start
 Menu()
     
-    
-    
+
     
     
 
