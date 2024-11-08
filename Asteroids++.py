@@ -15,7 +15,7 @@ pygame.mixer.init()
 #sound credits: William Benckert - Glitching Through the Sky 
 #Theme source: https://lospec.com/palette-list
 
-# GAME DESCRIPTION
+# GAME DESCRIPTION---------------------------------------------------------------------------------
 # a simple asteroid game where the player has to survive for as long as possible while also
 # shooting out transponders as some asteroid will have ores
 
@@ -24,7 +24,16 @@ pygame.mixer.init()
 # task is to fly about and locate ores so that the large mining ships can go collect them...
 # future features could include different ship mechanics and upgrade options... 
 
+#Seb TO-DO
+# 1) check if the global variable is neccessary 
+# 2) some local variable assignment in subroutines is redundant...
+# 3) matrix multiplication issues
+# 4) volume fade in and out or play pause
+
+
+
 #THEMES - these are the theme pallets (sub, accent1,accent2,accent3 and main colour respectively)
+#hide all of them...
 dark_theme = {
     "s_colour" : (255, 255, 255), # second colour
     "accent_colour_0" : (0, 0, 255), 
@@ -258,7 +267,6 @@ def Matrix_multy_r(coordinates, angle):
     # reasult2 = numpy.dot(reasult,c)
     # print(str(reasult2) + "reasult2")
     # return reasult2
-
     
     
 #A ONE LINER SUBFUNCTION TO CREATE BUTTON OBJECT        
@@ -400,11 +408,12 @@ def play():
 #THIS FUNCTION WORKS WITH SETTINGS FUNTION TO CHANGE THE VOLUME         
 def volumes():
 
+    #if music on pause else play...EASY
     if pygame.mixer.music.get_busy() == True: 
-        pygame.mixer.music.pause() # stop playback of all sound channels pygame.mixer.fadeout pygame.mixer.stop
+        pygame.mixer.music.fadeout(0.5) # stop playback of all sound channels: pygame.mixer.music.fadeout | pygame.mixer.music.stop | pygame.mixer.music.pause()
 
     elif pygame.mixer.music.get_busy() == False: 
-        pygame.mixer.music.unpause() 
+        pygame.mixer.music.fadein(0.5) 
 
 #THIS FUNCTION WORKS WITH SETTINGS FUNCTION TO CHANGE THE THEME 
 def themes():
@@ -427,37 +436,45 @@ def themes():
 
 #SETTINGS PAGE
 def settings():
+    #create buttons
     volume_button = button_frame(5, 4, "VOLUME", "volumes()", "Menu()", False)
     theme = button_frame(5, 6, "THEME", "themes()", "Menu()", False)
 
     list_buttons = [volume_button, theme]
 
-          
+    #start loop and set location too 0      
     location = 0
     setting = True
     while setting == True:
+        
+        #fill screen balck and call background animation
         screen.fill(current_theme["m_colour"])
         background()
         
+        # set move variableto 0 so that the selection stops moving up or down and ask for user input
         move = 0
         user_input = userinput()
         
+        #if input match...
         if user_input == "w": move = -1
         elif user_input == "s": move = 1 
-        elif user_input == 13:
+        elif user_input == 13: # check for every button what their function is and call it
             for item in list_buttons:
                 if item.click == True: 
                     eval(item.function)
-        elif user_input == "esc":
+        elif user_input == "esc": #check for every button what their back function is and call it....NOT neccesry for a for loop but could be usefull
             for item in list_buttons:
                 if item.click == True: 
                     eval(item.back)
-        else: move = 0
+        else: move = 0 # else do not move selector
              
+             
+        #the location of the selector is added by the move
         location = location + int(move)
-        location = location % len(list_buttons)
+        location = location % len(list_buttons) #the location is then modulode by the number of buttons so that it does not overflow
 
         
+        #for every buuton check if the location matches it, selecte it if it does
         for buttons in list_buttons:
             if buttons == list_buttons[location]: 
                 list_buttons[location].clicking(True)
@@ -465,13 +482,16 @@ def settings():
             else:
                 buttons.clicking(False)
             
+            #draw the buttons and selector square
             pygame.draw.rect(screen, buttons.fillcolour, (buttons.coordinates[0] - buttons.size[0]/2, buttons.coordinates[1] - buttons.size[1]/2, buttons.size[0], buttons.size[1]),0, 2, 3)
             subtitle = pygame.font.SysFont("Helvetic", buttons.textsize).render(buttons.content, True, buttons.textcolour)
             screen.blit(subtitle,(buttons.coordinates[0] - 150, buttons.coordinates[1]- 20))
         
+        #draw the title 
         title = pygame.font.SysFont("Helvetic", 200).render(" SETTINGS  ", True, current_theme["s_colour"])
         screen.blit(title, (screen_width/2-title.get_width()/2, screen_height/13*2-title.get_height()/2)) 
             
+        #update screen
         pygame.display.flip()
 
 #THIS FUNCTION WORKS WITH SETTINGS FUNCTION TO CHANGE THE CHARACTER
@@ -498,88 +518,67 @@ def change():
 #THIS IS THE SHIP/CHARACTER PAGE
 def character():
     
-    #
+    #Instead of leaving it as a frame work for a menu i optimsied it, this means it will nee to be drastically changed if i want to add another button...
+    
+    #creates a change button by calling the button subfunction and creating an object 
     changes = button_frame(5, 4, "CHANGE", "change()", "Menu()", False)
-    list_buttons = [changes]
           
-    #      
-    location = 0
+    #starts a loop       
     characterising = True
     while characterising == True:
        
-        #
+        #screen fill with main colour and run background animation
         screen.fill(current_theme["m_colour"])
         background()
         
-        #
-        move = 0
+        #this bassically causes the square to light up...
+        changes.clicking(True)
         
-        
-        #
+        #ask for user input
         user_input = userinput()
-        if user_input == "w": move = -1
-        elif user_input == "s": move = 1 
-        elif user_input == 13:
-            for item in list_buttons:
-                if item.click == True: 
-                    eval(item.function)
+
+        #if user input is equal to enter than check if the button
+        if user_input == 13:
+                eval(changes.function)
         elif user_input == "esc":
-            for item in list_buttons:
-                if item.click == True: 
-                    eval(item.back)
-        else: move = 0
+                eval(changes.back)
+        else: pass
              
 
-
-        #
-        location = location + int(move)
-        location = location % len(list_buttons)
+        #This highlites the button and writes the text inside the button     
+        pygame.draw.rect(screen, changes.fillcolour, (changes.coordinates[0] - changes.size[0]/2, changes.coordinates[1] - changes.size[1]/2, changes.size[0], changes.size[1]),0, 2, 3)
+        subtitle = pygame.font.SysFont("Helvetic", changes.textsize).render(changes.content, True, changes.textcolour)
+        screen.blit(subtitle,(changes.coordinates[0] - 150, changes.coordinates[1]- 20))
+    
         
-        #
-        for buttons in list_buttons:
-            if buttons == list_buttons[location]: 
-                list_buttons[location].clicking(True)
-            
-            else:
-                buttons.clicking(False)
-            
-            pygame.draw.rect(screen, buttons.fillcolour, (buttons.coordinates[0] - buttons.size[0]/2, buttons.coordinates[1] - buttons.size[1]/2, buttons.size[0], buttons.size[1]),0, 2, 3)
-            subtitle = pygame.font.SysFont("Helvetic", buttons.textsize).render(buttons.content, True, buttons.textcolour)
-            screen.blit(subtitle,(buttons.coordinates[0] - 150, buttons.coordinates[1]- 20))
-        
-        
-        
-        #
+        #This gets the information from the character file
         characters = open("character.txt", "r")
         current_character = eval(characters.readline())
 
-        match current_character["current"]: #
-            
-            #
+        match current_character["current"]:  
+                       
+            # for every point of the ship change the coordinates so that they fit inside the square
             case 0:
                 verteces = current_character["triangle"]
-                
                 for vertex in  verteces:
-                    vertex[0] = int(screen_width/2 - vertex[0]*5)
-                    vertex[1] = int(screen_height/13*7 + vertex[1]*5 - 100)
+                    vertex[0] = int(screen_width/2 - vertex[0]*5) #change the x so it is 5 times away from the center line of the screen
+                    vertex[1] = int(screen_height/13*7 + vertex[1]*5 - 100) 
                 
-            # 
             case 1:
-                verteces = current_character["arrow"]
-                               
+                verteces = current_character["arrow"]       
                 for vertex in verteces:
                     vertex[0] = int(screen_width/2 - vertex[0]*5)
                     vertex[1] = int(screen_height/13*7 + vertex[1]*5 - 60)
                     
-        #
+        #this draws the verteces
         pygame.draw.polygon(screen,current_theme["s_colour"], verteces, 5)
         pygame.draw.rect(screen, current_theme["s_colour"], (screen_width/10*5 - 175, screen_height/13*7 - 150, 350, 300),5, 2, 3)
         
-        #
+        #this draws the title at the top of the page
         title = pygame.font.SysFont("Helvetic", 200).render("SHIP HANGAR", True, current_theme["s_colour"])
         screen.blit(title, (screen_width/2-title.get_width()/2, screen_height/13*2-title.get_height()/2)) 
             
-        #    
+        #this updates the page
         pygame.display.flip()
 
 #THE EXIT PAGE    
@@ -601,7 +600,7 @@ def userinput():
                 case 769 | 27: return "esc"   #escape key
     return #return nothing, theif!
 
-#THIS DOES THE BACKGROUND STAR ANIMATION
+#THIS DOES THE BACKGROUND STAR ANIMATION 
 def background():
     global current_theme  #disgusting stuff..
     #create the locations of the stars for when we animate the background
@@ -638,7 +637,6 @@ def background():
 
 
 
-
 # Set up the display window
 screen_width, screen_height = pygame.display.Info().current_w, pygame.display.Info().current_h
 screen = pygame.display.set_mode((screen_width, screen_height-60))
@@ -646,8 +644,7 @@ pygame.display.set_caption("ASTEROIDS++")
 
 #MUSIC
 pygame.mixer.music.load("8bitsoundtrack.mp3")
-pygame.mixer.music.play(-1)
-
+pygame.mixer.music.play(-1) #indefinit play loops
 
 
 
