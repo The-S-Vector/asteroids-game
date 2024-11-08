@@ -241,48 +241,75 @@ class button(): #how i create all the buttons
 
 #MATRIX MULTIPLICATION FOR OBJECT ROTATION         
 # get the coordinates of each point and the desired turning angle
-def Matrix_multy_r(user,movementx, movementy, angle): 
+# def Matrix_multy_r(user,movementx, movementy, angle): 
     
-    location = []
+#     location = []
     
-    default = [[-20, 40], [0, -15], [20, 40], [0, 15]]
+#     default = [[-20, 40], [0, -15], [20, 40], [0, 15]]
 
-    x = 0
+#     x = 0
     
-    for point in user.shape:
+#     for point in user.shape:
                 
-        point[0] += movementx
-        point[1] += movementy
+#         point[0] += movementx
+#         point[1] += movementy
 
-        print(point)
-        print("^^^^^^^^^^^^^^^^")
-        # https://en.wikipedia.org/wiki/2D_computer_graphics#Non-standard_orientation_of_the_coordinate_system
+#         print(point)
+#         print("^^^^^^^^^^^^^^^^")
+#         # https://en.wikipedia.org/wiki/2D_computer_graphics#Non-standard_orientation_of_the_coordinate_system
 
-        #define 2d rotation matrix
-        b = [[cos(angle), -sin(angle)],
-                [sin(angle), cos(angle)]]
+#         #define 2d rotation matrix
+#         b = [[cos(angle), -sin(angle)],
+#                 [sin(angle), cos(angle)]]
         
         
         
-        difx = point[0] - default[x][0]
-        dify = point[1] - default[x][1]
+#         difx = point[0] - default[x][0]
+#         dify = point[1] - default[x][1]
 
-        point[0] -=difx
-        point[1] -=dify 
+#         point[0] -=difx
+#         point[1] -=dify 
         
         
-            #for every  point in the shape change the y axis by the movement
-        #if it is strange to only move the y axis, i don't know, it just works, i belive it is because the coordinates are based of the origin which idk 
+#             #for every  point in the shape change the y axis by the movement
+#         #if it is strange to only move the y axis, i don't know, it just works, i belive it is because the coordinates are based of the origin which idk 
 
             
-            #this appends to the location list the coordinate of every point after going through the rotation matrix so the rotated version...
-        location.append(numpy.dot(point,b))
+#             #this appends to the location list the coordinate of every point after going through the rotation matrix so the rotated version...
+#         location.append(numpy.dot(point,b))
         
-        point[0] += difx
-        point[1] += dify 
-        x += 1
+#         point[0] += difx
+#         point[1] += dify 
+#         x += 1
+        # return location
         
-    return location
+def Matrix_multy_r(coordinates, angle): 
+        
+        # https://en.wikipedia.org/wiki/2D_computer_graphics#Non-standard_orientation_of_the_coordinate_system
+        
+    #define 2d rotation matrix
+    b = [[cos(angle), -sin(angle)],
+        [sin(angle), cos(angle)]]
+    
+    #multiply the matric and output
+    return numpy.dot(coordinates,b)
+    
+    ##Combined transformation and rotation matrix
+    
+    # b = [[cos(angle), sin(angle), 0],
+    #      [-sin(angle), cos(angle), 0],
+    #      [point[0], point[1], 1]]
+    
+    
+    # c = [[1,0,0],
+    #      [0,1,0],
+    #      [-point[0], -point[1], 1]] 
+ 
+
+    # reasult2 = numpy.dot(reasult,c)
+    # print(str(reasult2) + "reasult2")
+    # return reasult2
+
     
     #multiply the matric and output
     
@@ -363,8 +390,15 @@ def play():
 
         
         #location is the list i store the reasults of the matrix multiplication for every point
-        location = Matrix_multy_r(user, movement, angle)
+        # location = Matrix_multy_r(user, movement, angle)
             
+        location = []
+        print(user.shape)
+        for point in user.shape:
+            point[1] += movement
+            
+            location.append(Matrix_multy_r(point, angle))  
+                
         #resets the movement and sets the scale of the ships magnification to 1 
         movement = 0 
         SCALE = 0.8
