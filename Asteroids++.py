@@ -156,7 +156,7 @@ clock = pygame.time.Clock()
 
 
 
-#OBJECTS
+#####OBJECTS#####
 #asteroid objects
 class Asteroids():
     
@@ -237,7 +237,7 @@ class button(): #how i create all the buttons
             self.fillcolour = current_theme["m_colour"]
            
  
-#SUB-FUNCTIONS  
+#####SUB-FUNCTIONS#####
 
 #MATRIX MULTIPLICATION FOR OBJECT ROTATION         
 # get the coordinates of each point and the desired turning angle
@@ -268,68 +268,6 @@ def Matrix_multy_r(coordinates, angle):
     # print(str(reasult2) + "reasult2")
     # return reasult2
     
-    
-#A ONE LINER SUBFUNCTION TO CREATE BUTTON OBJECT        
-#button_frame to make life easy            
-def button_frame(lattitude, number, content, function, back, clicked): 
-    return button(screen_width/10*lattitude, screen_height/13*number, content, function, back, clicked)
-  
-  
-#THE MENU PAGE      
-def Menu():
-    play_button = button_frame(5, 4, "PLAY", "play()", "exit()", False)
-    character_button = button_frame(5, 6, "SHIP", "character()","exit()", False)
-    option_button = button_frame(5, 8, "SETTINGS", "settings()","exit()", False)
-    exit_button = button_frame(5, 10, "EXIT", "exit()","exit()", False)
-    list_buttons = [play_button, character_button, option_button, exit_button]
-
-    Menuplay = True        
-    location = 0
-    
-    while Menuplay == True:
-        clock.tick(60)
-        screen.fill(current_theme["m_colour"])
-        background()
-        move = 0
-        user_input = userinput()
-        
-        if user_input == "w": move = -1
-        elif user_input == "s": move = 1 
-        elif user_input == 13:
-            for item in list_buttons:
-                if item.click == True: 
-                    eval(item.function)
-                    
-        elif user_input == "esc":
-            for item in list_buttons:
-                if item.click == True: 
-                    eval(item.back)
-        else: move = 0
-            
-            
-        try: 
-            location = location + int(move)
-            location = location % len(list_buttons)
-        except: 
-            pass
-        
-        
-        for buttons in list_buttons:
-            if buttons == list_buttons[location]: 
-                list_buttons[location].clicking(True)
-            
-            else:
-                buttons.clicking(False)
-            
-            
-            pygame.draw.rect(screen, buttons.fillcolour, pygame.Rect(buttons.coordinates[0] - buttons.size[0]/2, buttons.coordinates[1] - buttons.size[1]/2, buttons.size[0], buttons.size[1]),0, 2, 3)
-            subtitle = pygame.font.SysFont("Helvetic", buttons.textsize).render(buttons.content, True, buttons.textcolour)
-            screen.blit(subtitle,(buttons.coordinates[0] - 150, buttons.coordinates[1]- 20))
-        
-        title = pygame.font.SysFont("Helvetic", 200).render(" ASTEROIDS++", True, current_theme["s_colour"])
-        screen.blit(title, (screen_width/2-title.get_width()/2, screen_height/13*2-title.get_height()/2)) 
-            
-        pygame.display.flip()
 
 #THE GAME PAGE...NOT REALLY A PAGE
 def play():
@@ -404,77 +342,52 @@ def play():
         
         pygame.display.flip()
    
-   
-#THIS FUNCTION WORKS WITH SETTINGS FUNTION TO CHANGE THE VOLUME         
-def volumes():
 
-    #if music on pause else play...EASY
-    if pygame.mixer.music.get_busy() == True: 
-        pygame.mixer.music.fadeout(0.5) # stop playback of all sound channels: pygame.mixer.music.fadeout | pygame.mixer.music.stop | pygame.mixer.music.pause()
 
-    elif pygame.mixer.music.get_busy() == False: 
-        pygame.mixer.music.fadein(0.5) 
+###MAIN PAGE
 
-#THIS FUNCTION WORKS WITH SETTINGS FUNCTION TO CHANGE THE THEME 
-def themes():
+#THE MENU PAGE      
+def Menu():
     
-    global current_theme   # terrible i know
-    #I don't know this effects global and local variables as i don't think i should be calling them in here....
-    themes = [dark_theme,light_theme,Twilight_5_Palette,Ink_Palette,leopold_s_dreams_Palette,Sunset_Red_Palette,five_sheep,slimy_05_Palette,NEO_5_Palette]
-    
-    #read from external file
-    settings = open("settings.txt", "r")
-    current_theme = eval(settings.readline())
-    
-    #write the next theme by cycling through
-    settings = open("settings.txt", "w")
-    settings.write(str(themes[(current_theme["current"] + 1) % len(themes)]))
-    
-    #same issue about not needing to do this as it is localscope?              
-    settings = open("settings.txt", "r")       
-    current_theme = eval(settings.readline())       
+    #
+    play_button = button_frame(5, 4, "PLAY", "play()", "exit()", False)
+    character_button = button_frame(5, 6, "SHIP", "character()","exit()", False)
+    option_button = button_frame(5, 8, "SETTINGS", "settings()","exit()", False)
+    exit_button = button_frame(5, 10, "EXIT", "exit()","exit()", False)
+    list_buttons = [play_button, character_button, option_button, exit_button]
 
-#SETTINGS PAGE
-def settings():
-    #create buttons
-    volume_button = button_frame(5, 4, "VOLUME", "volumes()", "Menu()", False)
-    theme = button_frame(5, 6, "THEME", "themes()", "Menu()", False)
-
-    list_buttons = [volume_button, theme]
-
-    #start loop and set location too 0      
+    #
     location = 0
-    setting = True
-    while setting == True:
+    Menuplay = True       
+    while Menuplay == True:
         
-        #fill screen balck and call background animation
+        #
         screen.fill(current_theme["m_colour"])
         background()
         
-        # set move variableto 0 so that the selection stops moving up or down and ask for user input
+        #
         move = 0
         user_input = userinput()
         
-        #if input match...
+        #
         if user_input == "w": move = -1
         elif user_input == "s": move = 1 
-        elif user_input == 13: # check for every button what their function is and call it
+        elif user_input == 13:
             for item in list_buttons:
                 if item.click == True: 
                     eval(item.function)
-        elif user_input == "esc": #check for every button what their back function is and call it....NOT neccesry for a for loop but could be usefull
+                    
+        elif user_input == "esc":
             for item in list_buttons:
                 if item.click == True: 
                     eval(item.back)
-        else: move = 0 # else do not move selector
-             
-             
-        #the location of the selector is added by the move
+        else: move = 0
+            
+        #
         location = location + int(move)
-        location = location % len(list_buttons) #the location is then modulode by the number of buttons so that it does not overflow
-
+        location = location % len(list_buttons)
         
-        #for every buuton check if the location matches it, selecte it if it does
+        #
         for buttons in list_buttons:
             if buttons == list_buttons[location]: 
                 list_buttons[location].clicking(True)
@@ -482,17 +395,22 @@ def settings():
             else:
                 buttons.clicking(False)
             
-            #draw the buttons and selector square
-            pygame.draw.rect(screen, buttons.fillcolour, (buttons.coordinates[0] - buttons.size[0]/2, buttons.coordinates[1] - buttons.size[1]/2, buttons.size[0], buttons.size[1]),0, 2, 3)
+            #
+            pygame.draw.rect(screen, buttons.fillcolour, pygame.Rect(buttons.coordinates[0] - buttons.size[0]/2, buttons.coordinates[1] - buttons.size[1]/2, buttons.size[0], buttons.size[1]),0, 2, 3)
             subtitle = pygame.font.SysFont("Helvetic", buttons.textsize).render(buttons.content, True, buttons.textcolour)
             screen.blit(subtitle,(buttons.coordinates[0] - 150, buttons.coordinates[1]- 20))
         
-        #draw the title 
-        title = pygame.font.SysFont("Helvetic", 200).render(" SETTINGS  ", True, current_theme["s_colour"])
+        #
+        title = pygame.font.SysFont("Helvetic", 200).render(" ASTEROIDS++", True, current_theme["s_colour"])
         screen.blit(title, (screen_width/2-title.get_width()/2, screen_height/13*2-title.get_height()/2)) 
-            
-        #update screen
+           
+        # 
         pygame.display.flip()
+        clock.tick(60)
+
+
+
+###PAGE 2
 
 #THIS FUNCTION WORKS WITH SETTINGS FUNCTION TO CHANGE THE CHARACTER
 def change():
@@ -580,11 +498,117 @@ def character():
             
         #this updates the page
         pygame.display.flip()
+        clock.tick(60)
+
+
+
+###PAGE 3
+     
+#THIS FUNCTION WORKS WITH SETTINGS FUNTION TO CHANGE THE VOLUME         
+def volumes():
+
+    #if music on pause else play...EASY
+    if pygame.mixer.music.get_busy() == True: 
+        pygame.mixer.music.fadeout(0.5) # stop playback of all sound channels: pygame.mixer.music.fadeout | pygame.mixer.music.stop | pygame.mixer.music.pause()
+
+    elif pygame.mixer.music.get_busy() == False: 
+        pygame.mixer.music.fadein(0.5) 
+
+#THIS FUNCTION WORKS WITH SETTINGS FUNCTION TO CHANGE THE THEME 
+def themes():
+    
+    global current_theme   # terrible i know
+    #I don't know this effects global and local variables as i don't think i should be calling them in here....
+    themes = [dark_theme,light_theme,Twilight_5_Palette,Ink_Palette,leopold_s_dreams_Palette,Sunset_Red_Palette,five_sheep,slimy_05_Palette,NEO_5_Palette]
+    
+    #read from external file
+    settings = open("settings.txt", "r")
+    current_theme = eval(settings.readline())
+    
+    #write the next theme by cycling through
+    settings = open("settings.txt", "w")
+    settings.write(str(themes[(current_theme["current"] + 1) % len(themes)]))
+    
+    #same issue about not needing to do this as it is localscope?              
+    settings = open("settings.txt", "r")       
+    current_theme = eval(settings.readline())       
+
+    
+
+#SETTINGS PAGE
+def settings():
+    #create buttons
+    volume_button = button_frame(5, 4, "VOLUME", "volumes()", "Menu()", False)
+    theme = button_frame(5, 6, "THEME", "themes()", "Menu()", False)
+
+    list_buttons = [volume_button, theme]
+
+    #start loop and set location too 0      
+    location = 0
+    setting = True
+    while setting == True:
+        
+        #fill screen balck and call background animation
+        screen.fill(current_theme["m_colour"])
+        background()
+        
+        # set move variableto 0 so that the selection stops moving up or down and ask for user input
+        move = 0
+        user_input = userinput()
+        
+        #if input match...
+        if user_input == "w": move = -1
+        elif user_input == "s": move = 1 
+        elif user_input == 13: # check for every button what their function is and call it
+            for item in list_buttons:
+                if item.click == True: 
+                    eval(item.function)
+        elif user_input == "esc": #check for every button what their back function is and call it....NOT neccesry for a for loop but could be usefull
+            for item in list_buttons:
+                if item.click == True: 
+                    eval(item.back)
+        else: move = 0 # else do not move selector
+             
+             
+        #the location of the selector is added by the move
+        location = location + int(move)
+        location = location % len(list_buttons) #the location is then modulode by the number of buttons so that it does not overflow
+
+        
+        #for every buuton check if the location matches it, selecte it if it does
+        for buttons in list_buttons:
+            if buttons == list_buttons[location]: 
+                list_buttons[location].clicking(True)
+            
+            else:
+                buttons.clicking(False)
+            
+            #draw the buttons and selector square
+            pygame.draw.rect(screen, buttons.fillcolour, (buttons.coordinates[0] - buttons.size[0]/2, buttons.coordinates[1] - buttons.size[1]/2, buttons.size[0], buttons.size[1]),0, 2, 3)
+            subtitle = pygame.font.SysFont("Helvetic", buttons.textsize).render(buttons.content, True, buttons.textcolour)
+            screen.blit(subtitle,(buttons.coordinates[0] - 150, buttons.coordinates[1]- 20))
+        
+        #draw the title 
+        title = pygame.font.SysFont("Helvetic", 200).render(" SETTINGS  ", True, current_theme["s_colour"])
+        screen.blit(title, (screen_width/2-title.get_width()/2, screen_height/13*2-title.get_height()/2)) 
+            
+        #update screen
+        pygame.display.flip()
+        clock.tick(60)
+
+
+
+###UTILITIES AND OTHER
 
 #THE EXIT PAGE    
 def exit(): # self explanitory?
     pygame.quit()  
     sys.exit()
+
+#A ONE LINER SUBFUNCTION TO CREATE BUTTON OBJECT        
+#button_frame to make life easy            
+def button_frame(lattitude, number, content, function, back, clicked): 
+    return button(screen_width/10*lattitude, screen_height/13*number, content, function, back, clicked)
 
 #THIS IS THE INPUTS FUNCTION
 def userinput():
