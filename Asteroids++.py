@@ -361,6 +361,7 @@ def play():
         screen.fill(current_theme["m_colour"])
         background()
         
+        
         #gets the users input but only pertaining to escape and quit...
         user_input = userinput()
         if user_input == "esc": Menu()
