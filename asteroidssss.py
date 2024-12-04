@@ -239,13 +239,26 @@ class button(): #how i create all the buttons
  #####SUB-FUNCTIONS#####
 
         
-def Matrix_multy_r(coordinates, angle):     
-    # https://en.wikipedia.org/wiki/2D_computer_graphics#Non-standard_orientation_of_the_coordinate_system
-    #define 2d rotation matrix
-    angle = math.randians(angle)
-    b = [[cos(angle), -sin(angle)], [sin(angle), cos(angle)]]
-    #multiply the matric and output
-    return numpy.dot(coordinates,b)
+def rotate_point(x, y, cx, cy, angle):
+    print(angle)
+    radians = math.radians(angle)
+    cos_val = math.cos(radians)
+    sin_val = math.sin(radians)
+    print(x, cx, y, cy)
+    nx = cos_val * (x - cx) - sin_val * (y - cy) + cx
+    ny = sin_val * (x - cx) + cos_val * (y - cy) + cy
+    
+    return nx, ny
+
+def draw_triangle(angle):
+    size = 50
+    center_x, center_y = screen_width // 2, screen_height // 2
+    points = [(center_x, center_y - size), (center_x - size, center_y + size), (center_x + size, center_y + size)]
+    print(points)
+    for x, y in points: print(x, y)
+    print(angle)
+    rotated_points = [rotate_point(x, y, center_x, center_y, angle) for x, y in points]
+    pygame.draw.polygon(screen,(255,255,255), rotated_points)
 
     
 #THE GAME PAGE...NOT REALLY A PAGE
@@ -273,6 +286,10 @@ def play():
 
     #starts loop
     alive = True
+    speed = 5
+    size = 50
+    angle = 0
+    center_x, center_y = screen_width // 2, screen_height // 2
     while alive == True:
         
         #fills screen with main colour and runs background animation
@@ -287,32 +304,40 @@ def play():
 
         # depending on the key i change the angle or the movement
         # spiny keys
-        if pygame.key.get_pressed()[pygame.K_a]: angle += 0.1
-        if pygame.key.get_pressed()[pygame.K_d]: angle -= 0.1
+        if pygame.key.get_pressed()[pygame.K_a]: angle += 10
+        if pygame.key.get_pressed()[pygame.K_d]: angle -= 10
         
         # for/backwards keys
-        if pygame.key.get_pressed()[pygame.K_w]: movement -= 5
-        if pygame.key.get_pressed()[pygame.K_s]: movement +=5
+        if pygame.key.get_pressed()[pygame.K_w]: 
+            center_x += 5 * math.sin(math.radians(angle))
+            center_y -= 5 * math.cos(math.radians(angle))
+            movement -= 5
+        if pygame.key.get_pressed()[pygame.K_s]: 
+            center_x -= 5 * math.sin(math.radians(angle))
+            center_y += 5 * math.cos(math.radians(angle))
+            movement +=5
+            
+        center_x = max(size, min(screen_width - size, center_x))
+        center_y = max(size, min(screen_height - size, center_y))
             
         #location is the list i store the reasults of the matrix multiplication for every point
         # location = Matrix_multy_r(user, movement, angle)
-        location = []
-        for point in user.shape:
-            point[1] += movement
-            location.append(Matrix_multy_r(point, angle))  
+        
                 
         #resets the movement and sets the scale of the ships magnification to 1 
         movement = 0 
         SCALE = 0.8
         
+        draw_triangle(angle)
+        
         #this might be the cause of all my rotation issue but anyway
         #for every point in location(the matrix multiplied array) change it so the origin is the center of the screen so it starts in the center... 
-        for verteces in location:
-            verteces[0] = screen_width/2 - verteces[0]/SCALE
-            verteces[1] = screen_height/2 - verteces[1]/SCALE  
+        # for verteces in location:
+        #     verteces[0] = screen_width/2 - verteces[0]/SCALE
+        #     verteces[1] = screen_height/2 - verteces[1]/SCALE  
         
         #this draws the ship which locations arraw 
-        pygame.draw.polygon(screen,current_theme["s_colour"],tuple(location), 5)
+        # pygame.draw.polygon(screen,current_theme["s_colour"],tuple(location), 5)
         
         #updates the screen and limits the clock to what ever
         pygame.display.flip()
